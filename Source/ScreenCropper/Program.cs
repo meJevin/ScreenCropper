@@ -11,6 +11,8 @@ namespace ScreenCropper
 {
     static class Program
     {
+        private static frmMain MainForm = new frmMain();
+
         /// <summary>
         /// The main entry point for the application.
         /// </summary>
@@ -18,8 +20,8 @@ namespace ScreenCropper
         static void Main()
         {
             Application.EnableVisualStyles();
-            Application.SetCompatibleTextRenderingDefault(false);
-            Application.Run(new frmMain());
+
+            Application.Run();
         }
     }
 }
