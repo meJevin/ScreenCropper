@@ -60,6 +60,71 @@ namespace ScreenCropper
         LLKHF_UP = 0x80,
     }
 
+    public enum TernaryRasterOperations : uint
+    {
+        /// <summary>dest = source</summary>
+        SRCCOPY = 0x00CC0020,
+        /// <summary>dest = source OR dest</summary>
+        SRCPAINT = 0x00EE0086,
+        /// <summary>dest = source AND dest</summary>
+        SRCAND = 0x008800C6,
+        /// <summary>dest = source XOR dest</summary>
+        SRCINVERT = 0x00660046,
+        /// <summary>dest = source AND (NOT dest)</summary>
+        SRCERASE = 0x00440328,
+        /// <summary>dest = (NOT source)</summary>
+        NOTSRCCOPY = 0x00330008,
+        /// <summary>dest = (NOT src) AND (NOT dest)</summary>
+        NOTSRCERASE = 0x001100A6,
+        /// <summary>dest = (source AND pattern)</summary>
+        MERGECOPY = 0x00C000CA,
+        /// <summary>dest = (NOT source) OR dest</summary>
+        MERGEPAINT = 0x00BB0226,
+        /// <summary>dest = pattern</summary>
+        PATCOPY = 0x00F00021,
+        /// <summary>dest = DPSnoo</summary>
+        PATPAINT = 0x00FB0A09,
+        /// <summary>dest = pattern XOR dest</summary>
+        PATINVERT = 0x005A0049,
+        /// <summary>dest = (NOT dest)</summary>
+        DSTINVERT = 0x00550009,
+        /// <summary>dest = BLACK</summary>
+        BLACKNESS = 0x00000042,
+        /// <summary>dest = WHITE</summary>
+        WHITENESS = 0x00FF0062,
+        /// <summary>
+        /// Capture window as seen on screen.  This includes layered windows 
+        /// such as WPF windows with AllowsTransparency="true"
+        /// </summary>
+        CAPTUREBLT = 0x40000000
+    }
+
+    public enum CLIPFORMAT : int
+    {
+        CF_TEXT = 1,
+        CF_BITMAP = 2,
+        CF_METAFILEPICT = 3,
+        CF_SYLK = 4,
+        CF_DIF = 5,
+        CF_TIFF = 6,
+        CF_OEMTEXT = 7,
+        CF_DIB = 8,
+        CF_PALETTE = 9,
+        CF_PENDATA = 10,
+        CF_RIFF = 11,
+        CF_WAVE = 12,
+        CF_UNICODETEXT = 13,
+        CF_ENHMETAFILE = 14,
+        CF_HDROP = 15,
+        CF_LOCALE = 16,
+        CF_MAX = 17,
+        CF_OWNERDISPLAY = 0x80,
+        CF_DSPTEXT = 0x81,
+        CF_DSPBITMAP = 0x82,
+        CF_DSPMETAFILEPICT = 0x83,
+        CF_DSPENHMETAFILE = 0x8E,
+    }
+
     public static class WM
     {
         public const int KEYDOWN = 0x0100;
