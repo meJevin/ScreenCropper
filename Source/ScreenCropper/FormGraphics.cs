@@ -15,20 +15,27 @@ namespace ScreenCropper
 {
     public class ScreenCropperDrawer
     {
-        private static Graphics screenGraphics;
-
-        public static void FillRectangle(Brush brush, Rectangle rect)
+        public static void FillRectangle(Rectangle rect, IntPtr windowHandle)
         {
-            if (screenGraphics == null)
-            {
-                screenGraphics = Graphics.FromHwnd(IntPtr.Zero);
-            }
+            IntPtr drawReg = CreateRectRgn(rect.Left,
+                        rect.Top,
+                        rect.Left + rect.Width,
+                        rect.Top + rect.Height
+                        );
 
-            screenGraphics.FillRectangle(brush, rect);
+            SetWindowRgn(windowHandle, drawReg, true);
         }
+
+        [DllImport("gdi32.dll")]
+        static public extern IntPtr CreateRectRgn(int x1, int y1, int x2, int y2);
+
+        [DllImport("user32.dll")]
+        static public extern IntPtr SetWindowRgn(IntPtr hWnd, IntPtr hRgn, bool redraw);
     }
+
     public static class ScreenCropperExtensions
     {
+        
         public static Rectangle RectangleFromTwoPoints(Point p1, Point p2)
         {
             return new Rectangle(Math.Min(p1.X, p2.X),
