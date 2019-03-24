@@ -7,7 +7,7 @@ using System.Runtime.InteropServices;
 
 namespace ScreenCropper
 {
-    public delegate IntPtr LowLevelKeyboardProc(int nCode, IntPtr wParam, IntPtr lParam);
+    public delegate IntPtr LowLevelHookProcedure(int nCode, IntPtr wParam, IntPtr lParam);
 
     public static class WinAPIHelper
     {
@@ -21,7 +21,8 @@ namespace ScreenCropper
                         );
 
             var list = Environment.StackTrace;
-            SetWindowRgn(windowHandle, drawReg, false);
+            SetWindowRgn(windowHandle, drawReg, true);
+            WinAPIHelper.Rectangle(windowHandle, rect.Left, rect.Top, rect.Right, rect.Bottom);
             Console.WriteLine("Called from " + new StackFrame(1, true).GetMethod().Name);
         }
 
@@ -31,11 +32,14 @@ namespace ScreenCropper
 
         [DllImport("user32.dll")]
         static public extern IntPtr SetWindowRgn(IntPtr hWnd, IntPtr hRgn, bool redraw);
+
+        [DllImport("gdi32.dll")]
+        static extern bool Rectangle(IntPtr hdc, int nLeftRect, int nTopRect, int nRightRect, int nBottomRect);
         #endregion
         #endregion
 
         #region Hooks
-        public static IntPtr SetHook(LowLevelKeyboardProc proc)
+        public static IntPtr SetGlobalKeyboardHook(LowLevelHookProcedure proc)
         {
             using (Process curProcess = Process.GetCurrentProcess())
             using (ProcessModule curModule = curProcess.MainModule)
@@ -45,9 +49,19 @@ namespace ScreenCropper
             }
         }
 
+        public static IntPtr SetGlobalMouseHook(LowLevelHookProcedure proc)
+        {
+            using (Process curProcess = Process.GetCurrentProcess())
+            using (ProcessModule curModule = curProcess.MainModule)
+            {
+                return SetWindowsHookEx(WH.WH_MOUSE_LL, proc,
+                    GetModuleHandle(curModule.ModuleName), 0);
+            }
+        }
+
         #region DLL Import
         [DllImport("user32.dll", CharSet = CharSet.Auto, SetLastError = true)]
-        public static extern IntPtr SetWindowsHookEx(int idHook, LowLevelKeyboardProc lpfn, IntPtr hMod, uint dwThreadId);
+        public static extern IntPtr SetWindowsHookEx(int idHook, LowLevelHookProcedure lpfn, IntPtr hMod, uint dwThreadId);
 
         [DllImport("user32.dll", CharSet = CharSet.Auto, SetLastError = true)]
         [return: MarshalAs(UnmanagedType.Bool)]
@@ -101,7 +115,7 @@ namespace ScreenCropper
         CAPTUREBLT = 0x40000000
     }
 
-    public enum CLIPFORMAT : int
+    public enum ClipFormat : int
     {
         CF_TEXT = 1,
         CF_BITMAP = 2,
@@ -127,18 +141,47 @@ namespace ScreenCropper
         CF_DSPENHMETAFILE = 0x8E,
     }
 
-    public static class WM
+    public enum WM
     {
-        public const int KEYDOWN = 0x0100;
-        public const int KEYUP = 0x0101;
+        KEYDOWN = 0x0100,
+        KEYUP = 0x0101,
 
-        public const int SYSKEYDOWN = 0x0104;
-        public const int SYSKEYUP = 0x0105;
+        SYSKEYDOWN = 0x0104,
+        SYSKEYUP = 0x0105
     }
 
+    // Made this a static class instead of enum because I fucking hate explicit conversions
     public static class WH
     {
         public const int KEYBOARD_LL = 13;
+        public const int WH_MOUSE_LL = 14;
+    }
+
+    public enum MouseMessages
+    {
+        WM_LBUTTONDOWN = 0x0201,
+        WM_LBUTTONUP = 0x0202,
+        WM_MOUSEMOVE = 0x0200,
+        WM_MOUSEWHEEL = 0x020A,
+        WM_RBUTTONDOWN = 0x0204,
+        WM_RBUTTONUP = 0x0205
+    }
+
+    [StructLayout(LayoutKind.Sequential)]
+    public struct W32Point
+    {
+        public int x;
+        public int y;
+    }
+
+    [StructLayout(LayoutKind.Sequential)]
+    public struct LowLevelMouseHookStructure
+    {
+        public W32Point point;
+        public uint mouseData;
+        public uint flags;
+        public uint time;
+        public IntPtr dwExtraInfo;
     }
     
 }

@@ -15,8 +15,11 @@ namespace ScreenCropper
         {
             InitializeComponent();
 
-            HookProc = HookCallback;
-            HookID = WinAPIHelper.SetHook(HookProc);
+            MouseHookProcedure = MouseHookCallback;
+            MouseHookID = WinAPIHelper.SetGlobalMouseHook(MouseHookProcedure);
+
+            KeyboardHookProcedure = KeyboardHookCallback;
+            KeyboardHookID = WinAPIHelper.SetGlobalKeyboardHook(KeyboardHookProcedure);
 
             // Get device contexts for out screen
             screenDC = GetDC(IntPtr.Zero);
@@ -28,8 +31,11 @@ namespace ScreenCropper
 
         ~frmMain()
         {
-            WinAPIHelper.UnhookWindowsHookEx(HookID);
+            // Release the hooks
+            WinAPIHelper.UnhookWindowsHookEx(MouseHookID);
+            WinAPIHelper.UnhookWindowsHookEx(KeyboardHookID);
 
+            // And the screen device context
             ReleaseDC(IntPtr.Zero, screenDC);
         }
 
@@ -40,15 +46,19 @@ namespace ScreenCropper
         private List<Key> CurrentCombination = new List<Key>() { Key.LeftCtrl, Key.LeftAlt, Key.V };
 
         // This pointer is required to perform unhooking cleanup
-        private IntPtr HookID = IntPtr.Zero;
-        private static LowLevelKeyboardProc HookProc;
+        private IntPtr KeyboardHookID = IntPtr.Zero;
+        private static LowLevelHookProcedure KeyboardHookProcedure;
 
-        private Point selectionStartPoint = new Point();
+        private IntPtr MouseHookID = IntPtr.Zero;
+        private static LowLevelHookProcedure MouseHookProcedure;
+
+        private System.Drawing.Point selectionStartPoint = new System.Drawing.Point();
 
         // Used for the Mouse Move event, becaused apparentely it false fires a lot :)
-        private Point lastCursorPosition = new Point();
+        private System.Drawing.Point lastCursorPosition = new System.Drawing.Point();
 
         private bool isTakingScreenshot = false;
+        private bool overlayVisible = false;
 
         private IntPtr screenDC;
         private IntPtr screenCompatibleDC;
@@ -57,29 +67,84 @@ namespace ScreenCropper
 
         #region Privates Methods
 
-        private void StopTakingScreenshot()
+        #region Hook callbacks
+        private IntPtr MouseHookCallback(int nCode, IntPtr wParam, IntPtr lParam)
         {
-            if (!isTakingScreenshot)
+            if (nCode < 0)
             {
-                return;
+                return WinAPIHelper.CallNextHookEx(KeyboardHookID, nCode, wParam, lParam);
             }
 
+            MouseMessages mouseMessage = (MouseMessages)wParam;
+
+            LowLevelMouseHookStructure mouseInfo = (LowLevelMouseHookStructure)Marshal.PtrToStructure(lParam, typeof(LowLevelMouseHookStructure));
+
+            if (mouseMessage == MouseMessages.WM_LBUTTONDOWN)
+            {
+                if (!isTakingScreenshot && overlayVisible)
+                {
+                    StartTakingScreenshot(new Point(mouseInfo.point.x, mouseInfo.point.y));
+                }
+            }
+            else if (mouseMessage == MouseMessages.WM_LBUTTONUP)
+            {
+                if (isTakingScreenshot)
+                {
+                    StopTakingScreenshot();
+
+                    CopySelectedAreaToClipBoard();
+                }
+            }
+            else if (mouseMessage == MouseMessages.WM_MOUSEMOVE)
+            {
+                if (isTakingScreenshot)
+                {
+                    HandleScreenshotSelectionChange(new Point(mouseInfo.point.x, mouseInfo.point.y));
+                }
+            }
+
+            return WinAPIHelper.CallNextHookEx(KeyboardHookID, nCode, wParam, lParam);
+        }
+
+        private IntPtr KeyboardHookCallback(int nCode, IntPtr wParam, IntPtr lParam)
+        {
+            if (nCode < 0)
+            {
+                return WinAPIHelper.CallNextHookEx(KeyboardHookID, nCode, wParam, lParam);
+            }
+
+            if (Keyboard.IsKeyDown(Key.Escape))
+            {
+                StopTakingScreenshot();
+            }
+            else if (IsCombinationPressed())
+            {
+                ShowScreenshotOverlay();
+            }
+
+            return WinAPIHelper.CallNextHookEx(KeyboardHookID, nCode, wParam, lParam);
+        }
+        #endregion
+
+        private void StopTakingScreenshot()
+        {
             this.Opacity = 0.25;
             isTakingScreenshot = false;
             Visible = false;
+            overlayVisible = false;
         }
 
         private void ShowScreenshotOverlay()
         {
             if (this.Size != SystemInformation.VirtualScreen.Size)
             {
-                this.Location = new Point(0, 0);
+                this.Location = new System.Drawing.Point(0, 0);
                 this.Size = SystemInformation.VirtualScreen.Size;
                 this.Bounds = new Rectangle(0, 0, this.Size.Width, this.Size.Height);
             }
             this.Opacity = 0.5;
             Visible = true;
-
+            overlayVisible = true;
             DrawWindowRectangle(SystemInformation.VirtualScreen);
         }
 
@@ -102,29 +167,12 @@ namespace ScreenCropper
 
             return combinationPressed;
         }
-
-        private IntPtr HookCallback(int nCode, IntPtr wParam, IntPtr lParam)
-        {
-            if (nCode < 0)
-            {
-                return WinAPIHelper.CallNextHookEx(HookID, nCode, wParam, lParam);
-            }
-
-            if (Keyboard.IsKeyDown(Key.Escape))
-            {
-                StopTakingScreenshot();
-            }
-            else if (IsCombinationPressed())
-            {
-                ShowScreenshotOverlay();
-            }
-
-            return WinAPIHelper.CallNextHookEx(HookID, nCode, wParam, lParam);
-        }
-
+        
         private void CopySelectedAreaToClipBoard()
         {
-            Rectangle selectionRect = Utils.RectangleFromTwoPoints(selectionStartPoint, MousePosition);
+            Console.WriteLine("Copying from " + selectionStartPoint.ToString() + " to " + lastCursorPosition.ToString());
+
+            Rectangle selectionRect = Utils.RectangleFromTwoPoints(selectionStartPoint, lastCursorPosition);
 
             IntPtr screenBitmap = CreateCompatibleBitmap(screenDC, selectionRect.Width, selectionRect.Height);
             IntPtr tempScreenBitmap = SelectObject(screenCompatibleDC, screenBitmap);
@@ -135,52 +183,26 @@ namespace ScreenCropper
 
             OpenClipboard(IntPtr.Zero);
             EmptyClipboard();
-            SetClipboardData(CLIPFORMAT.CF_BITMAP, screenBitmap);
+            SetClipboardData(ClipFormat.CF_BITMAP, screenBitmap);
             CloseClipboard();
         }
 
-        #endregion
-
-        #region Mouse Events
-
-        private void frmMain_MouseDown(object sender, System.Windows.Forms.MouseEventArgs e)
+        private void StartTakingScreenshot(Point currentMousePosition)
         {
-            if (e.Button == MouseButtons.Left)
-            {
-                selectionStartPoint = MousePosition;
-                isTakingScreenshot = true;
-            }
+            selectionStartPoint = currentMousePosition;
+            isTakingScreenshot = true;
         }
-
-        private void frmMain_MouseMove(object sender, System.Windows.Forms.MouseEventArgs e)
+        
+        private void HandleScreenshotSelectionChange(Point currentMousePosition)
         {
-            if (e.Button != MouseButtons.Left || lastCursorPosition == MousePosition)
-            {
-                return;
-            }
+            overlayVisible = false;
 
-            Rectangle selectionRect = Utils.RectangleFromTwoPoints(selectionStartPoint, MousePosition);
+            Rectangle selectionRect = Utils.RectangleFromTwoPoints(selectionStartPoint, currentMousePosition);
 
             DrawWindowRectangle(selectionRect);
 
-            lastCursorPosition = MousePosition;
+            lastCursorPosition = currentMousePosition;
         }
-
-        private void frmMain_MouseUp(object sender, System.Windows.Forms.MouseEventArgs e)
-        {
-            if (e.Button != MouseButtons.Left)
-            {
-                return;
-            }
-
-            if (isTakingScreenshot)
-            {
-                StopTakingScreenshot();
-
-                CopySelectedAreaToClipBoard();
-            }
-        }
-
         #endregion
 
         #region DLL Imports
@@ -194,7 +216,7 @@ namespace ScreenCropper
         static extern bool CloseClipboard();
 
         [DllImport("user32.dll", SetLastError = true)]
-        static extern int SetClipboardData(CLIPFORMAT uFormat, IntPtr hMem);
+        static extern int SetClipboardData(ClipFormat uFormat, IntPtr hMem);
 
         [DllImport("gdi32.dll")]
         static extern IntPtr CreateDC(string lpszDriver, string lpszDevice, string lpszOutput, IntPtr lpInitData);

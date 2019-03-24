@@ -22,6 +22,13 @@ namespace ScreenCropper
             Application.EnableVisualStyles();
 
             Application.Run();
+
+            AppDomain.CurrentDomain.UnhandledException += new UnhandledExceptionEventHandler(OnUnhandledExpection);
+        }
+
+        static void OnUnhandledExpection(object sender, UnhandledExceptionEventArgs args)
+        {
+            MessageBox.Show(args.ToString());
         }
     }
 }

@@ -100,9 +100,6 @@
             this.ShowInTaskbar = false;
             this.Text = "Screen Cropper";
             this.TopMost = true;
-            this.MouseDown += new System.Windows.Forms.MouseEventHandler(this.frmMain_MouseDown);
-            this.MouseMove += new System.Windows.Forms.MouseEventHandler(this.frmMain_MouseMove);
-            this.MouseUp += new System.Windows.Forms.MouseEventHandler(this.frmMain_MouseUp);
             this.trayIconContextMenu.ResumeLayout(false);
             this.ResumeLayout(false);
 
