@@ -39,7 +39,6 @@ namespace ScreenCropper
             ReleaseDC(IntPtr.Zero, screenDC);
         }
 
-
         #region Private Variables
 
         // Current key combination that activated Screen Cropper
@@ -52,10 +51,9 @@ namespace ScreenCropper
         private IntPtr MouseHookID = IntPtr.Zero;
         private static LowLevelHookProcedure MouseHookProcedure;
 
-        private System.Drawing.Point selectionStartPoint = new System.Drawing.Point();
-
-        // Used for the Mouse Move event, becaused apparentely it false fires a lot :)
-        private System.Drawing.Point lastCursorPosition = new System.Drawing.Point();
+        // Used for selection drawing
+        private Point selectionStartPoint = new Point();
+        private Point lastCursorPosition = new Point();
 
         private bool isTakingScreenshot = false;
         private bool overlayVisible = false;
@@ -125,6 +123,12 @@ namespace ScreenCropper
             return WinAPIHelper.CallNextHookEx(KeyboardHookID, nCode, wParam, lParam);
         }
         #endregion
+        
+        private void StartTakingScreenshot(Point currentMousePosition)
+        {
+            selectionStartPoint = currentMousePosition;
+            isTakingScreenshot = true;
+        }
 
         private void StopTakingScreenshot()
         {
@@ -145,6 +149,7 @@ namespace ScreenCropper
             this.Opacity = 0.5;
             Visible = true;
             overlayVisible = true;
+
             DrawWindowRectangle(SystemInformation.VirtualScreen);
         }
 
@@ -170,8 +175,6 @@ namespace ScreenCropper
         
         private void CopySelectedAreaToClipBoard()
         {
-            Console.WriteLine("Copying from " + selectionStartPoint.ToString() + " to " + lastCursorPosition.ToString());
-
             Rectangle selectionRect = Utils.RectangleFromTwoPoints(selectionStartPoint, lastCursorPosition);
 
             IntPtr screenBitmap = CreateCompatibleBitmap(screenDC, selectionRect.Width, selectionRect.Height);
@@ -185,12 +188,6 @@ namespace ScreenCropper
             EmptyClipboard();
             SetClipboardData(ClipFormat.CF_BITMAP, screenBitmap);
             CloseClipboard();
-        }
-
-        private void StartTakingScreenshot(Point currentMousePosition)
-        {
-            selectionStartPoint = currentMousePosition;
-            isTakingScreenshot = true;
         }
         
         private void HandleScreenshotSelectionChange(Point currentMousePosition)

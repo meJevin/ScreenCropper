@@ -19,11 +19,8 @@ namespace ScreenCropper
                         rect.Left + rect.Width,
                         rect.Top + rect.Height
                         );
-
-            var list = Environment.StackTrace;
-            SetWindowRgn(windowHandle, drawReg, true);
-            WinAPIHelper.Rectangle(windowHandle, rect.Left, rect.Top, rect.Right, rect.Bottom);
-            Console.WriteLine("Called from " + new StackFrame(1, true).GetMethod().Name);
+            
+            SetWindowRgn(windowHandle, drawReg, false);
         }
 
         #region DLL Imports
@@ -183,5 +180,4 @@ namespace ScreenCropper
         public uint time;
         public IntPtr dwExtraInfo;
     }
-    
 }

@@ -25,7 +25,7 @@ namespace ScreenCropper
 
             AppDomain.CurrentDomain.UnhandledException += new UnhandledExceptionEventHandler(OnUnhandledExpection);
         }
-
+        
         static void OnUnhandledExpection(object sender, UnhandledExceptionEventArgs args)
         {
             MessageBox.Show(args.ToString());
