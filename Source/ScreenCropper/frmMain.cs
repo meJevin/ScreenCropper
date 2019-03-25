@@ -98,6 +98,7 @@ namespace ScreenCropper
                 if (isTakingScreenshot)
                 {
                     HandleScreenshotSelectionChange(new Point(mouseInfo.point.x, mouseInfo.point.y));
+                    Invalidate();
                 }
             }
 
@@ -136,6 +137,7 @@ namespace ScreenCropper
             isTakingScreenshot = false;
             Visible = false;
             overlayVisible = false;
+            BackColor = Color.Black;
         }
 
         private void ShowScreenshotOverlay()
@@ -194,6 +196,11 @@ namespace ScreenCropper
         {
             overlayVisible = false;
 
+            if (BackColor != Color.White)
+            {
+                BackColor = Color.White;
+            }
+
             Rectangle selectionRect = Utils.RectangleFromTwoPoints(selectionStartPoint, currentMousePosition);
 
             DrawWindowRectangle(selectionRect);
@@ -246,5 +253,12 @@ namespace ScreenCropper
         }
 
         #endregion
+
+        Pen rectPen = new Pen(new SolidBrush(Color.Black), 1.5f);
+        private void frmMain_Paint(object sender, PaintEventArgs e)
+        {
+            Console.WriteLine("Paint");
+            e.Graphics.DrawRectangle(rectPen, e.ClipRectangle);
+        }
     }
 }

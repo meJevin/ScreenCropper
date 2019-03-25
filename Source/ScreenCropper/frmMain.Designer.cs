@@ -101,6 +101,7 @@
             this.ShowInTaskbar = false;
             this.Text = "Screen Cropper";
             this.TopMost = true;
+            this.Paint += new System.Windows.Forms.PaintEventHandler(this.frmMain_Paint);
             this.trayIconContextMenu.ResumeLayout(false);
             this.ResumeLayout(false);
 

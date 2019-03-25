@@ -20,7 +20,7 @@ namespace ScreenCropper
                         rect.Top + rect.Height
                         );
             
-            SetWindowRgn(windowHandle, drawReg, false);
+            SetWindowRgn(windowHandle, drawReg, true);
         }
 
         #region DLL Imports
