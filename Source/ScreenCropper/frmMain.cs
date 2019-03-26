@@ -26,7 +26,7 @@ namespace ScreenCropper
             screenCompatibleDC = CreateCompatibleDC(screenDC);
 
             // This clears the BG initially
-            DrawWindowRectangle(SystemInformation.VirtualScreen);
+            WinAPIHelper.DrawWindowRectangle(SystemInformation.VirtualScreen, this.Handle);
         }
 
         ~frmMain()
@@ -127,6 +127,11 @@ namespace ScreenCropper
         }
         #endregion
 
+        #region Screenshot Related
+
+        /// <summary>
+        /// Black overlay which is a system-on-top fullscreen form
+        /// </summary>
         private void ShowScreenshotOverlay()
         {
             if (this.Size != SystemInformation.VirtualScreen.Size)
@@ -139,7 +144,7 @@ namespace ScreenCropper
             Visible = true;
             overlayVisible = true;
 
-            DrawWindowRectangle(SystemInformation.VirtualScreen);
+            WinAPIHelper.DrawWindowRectangle(SystemInformation.VirtualScreen, this.Handle);
         }
 
         private void StartTakingScreenshot(Point currentMousePosition)
@@ -157,26 +162,27 @@ namespace ScreenCropper
             BackColor = Color.Black;
         }
 
-        private void DrawWindowRectangle(Rectangle rect)
+        /// <summary>
+        /// Occurs when user moves the mouse while selecting the desired area of screenshot
+        /// </summary>
+        /// <param name="currentMousePosition">New mouse position</param>
+        private void HandleScreenshotSelectionChange(Point currentMousePosition)
         {
-            WinAPIHelper.DrawWindowRectangle(rect, this.Handle);
-        }
+            overlayVisible = false;
 
-        private bool IsCombinationPressed()
-        {
-            bool combinationPressed = true;
-            foreach (var key in CurrentCombination)
+            if (BackColor != Color.White)
             {
-                if (!Keyboard.IsKeyDown(key))
-                {
-                    combinationPressed = false;
-                    break;
-                }
+                BackColor = Color.White;
             }
 
-            return combinationPressed;
+            Rectangle selectionRect = Utils.RectangleFromTwoPoints(selectionStartPoint, currentMousePosition);
+
+            // Look at the defenition for more details
+            WinAPIHelper.DrawWindowRectangle(selectionRect, this.Handle);
+
+            lastCursorPosition = currentMousePosition;
         }
-        
+
         private void CopySelectedAreaToClipBoard()
         {
             Rectangle selectionRect = Utils.RectangleFromTwoPoints(selectionStartPoint, lastCursorPosition);
@@ -193,22 +199,40 @@ namespace ScreenCropper
             SetClipboardData(ClipFormat.CF_BITMAP, screenBitmap);
             CloseClipboard();
         }
-        
-        private void HandleScreenshotSelectionChange(Point currentMousePosition)
-        {
-            overlayVisible = false;
 
-            if (BackColor != Color.White)
+        #endregion
+
+        #region Combination Related
+
+        private bool IsCombinationPressed()
+        {
+            bool combinationPressed = true;
+            foreach (var key in CurrentCombination)
             {
-                BackColor = Color.White;
+                if (!Keyboard.IsKeyDown(key))
+                {
+                    combinationPressed = false;
+                    break;
+                }
             }
 
-            Rectangle selectionRect = Utils.RectangleFromTwoPoints(selectionStartPoint, currentMousePosition);
-
-            DrawWindowRectangle(selectionRect);
-
-            lastCursorPosition = currentMousePosition;
+            return combinationPressed;
         }
+
+        private void ShowCurrentCombinationInTrayIcon()
+        {
+            if (trayIcon.Icon == null)
+            {
+                trayIcon.Icon = new Icon("ScreenCropper.ico");
+            }
+
+            trayIcon.BalloonTipTitle = "Your combination";
+            trayIcon.BalloonTipText = Utils.GetCombinationString(CurrentCombination);
+            trayIcon.Visible = true;
+            trayIcon.ShowBalloonTip(3000);
+        }
+
+        #endregion
 
         #region Form events
         private void frmMain_Paint(object sender, PaintEventArgs e)
@@ -261,10 +285,23 @@ namespace ScreenCropper
 
         private void quitMenuItem_Click(object sender, EventArgs e)
         {
-            Application.Exit();
+            DialogResult result = MessageBox.Show("Are you sure you want to exit Screen Cropper?", "Qutting Screen Cropper", MessageBoxButtons.YesNo);
+
+            if (result == DialogResult.Yes)
+            {
+                Application.Exit();
+            }
+            else
+            {
+                return;
+            }
+        }
+
+        private void showCombinationMenuItem_Click(object sender, EventArgs e)
+        {
+            ShowCurrentCombinationInTrayIcon();
         }
 
         #endregion
-
     }
 }

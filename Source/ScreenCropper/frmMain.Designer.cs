@@ -30,21 +30,15 @@
         {
             this.components = new System.ComponentModel.Container();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(frmMain));
-            this.trayIcon = new System.Windows.Forms.NotifyIcon(this.components);
             this.trayIconContextMenu = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.launchOnStartupMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.changeCombinationMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.showCombinationMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.quitMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.trayNotifyIcon = new System.Windows.Forms.NotifyIcon(this.components);
+            this.trayIcon = new System.Windows.Forms.NotifyIcon(this.components);
             this.trayIconContextMenu.SuspendLayout();
             this.SuspendLayout();
-            // 
-            // trayIcon
-            // 
-            this.trayIcon.ContextMenuStrip = this.trayIconContextMenu;
-            this.trayIcon.Icon = ((System.Drawing.Icon)(resources.GetObject("trayIcon.Icon")));
-            this.trayIcon.Text = "Screen Cropper";
-            this.trayIcon.Visible = true;
             // 
             // trayIconContextMenu
             // 
@@ -74,6 +68,7 @@
             this.showCombinationMenuItem.Name = "showCombinationMenuItem";
             this.showCombinationMenuItem.Size = new System.Drawing.Size(186, 22);
             this.showCombinationMenuItem.Text = "Show combination";
+            this.showCombinationMenuItem.Click += new System.EventHandler(this.showCombinationMenuItem_Click);
             // 
             // quitMenuItem
             // 
@@ -81,6 +76,18 @@
             this.quitMenuItem.Size = new System.Drawing.Size(186, 22);
             this.quitMenuItem.Text = "Quit";
             this.quitMenuItem.Click += new System.EventHandler(this.quitMenuItem_Click);
+            // 
+            // trayNotifyIcon
+            // 
+            this.trayNotifyIcon.Text = "Screen Cropper";
+            this.trayNotifyIcon.Visible = true;
+            // 
+            // trayIcon
+            // 
+            this.trayIcon.ContextMenuStrip = this.trayIconContextMenu;
+            this.trayIcon.Icon = ((System.Drawing.Icon)(resources.GetObject("trayIcon.Icon")));
+            this.trayIcon.Text = "Screen Cropper";
+            this.trayIcon.Visible = true;
             // 
             // frmMain
             // 
@@ -108,12 +115,12 @@
         }
 
         #endregion
-
-        private System.Windows.Forms.NotifyIcon trayIcon;
         private System.Windows.Forms.ContextMenuStrip trayIconContextMenu;
         private System.Windows.Forms.ToolStripMenuItem launchOnStartupMenuItem;
         private System.Windows.Forms.ToolStripMenuItem changeCombinationMenuItem;
         private System.Windows.Forms.ToolStripMenuItem showCombinationMenuItem;
         private System.Windows.Forms.ToolStripMenuItem quitMenuItem;
+        private System.Windows.Forms.NotifyIcon trayNotifyIcon;
+        private System.Windows.Forms.NotifyIcon trayIcon;
     }
 }
