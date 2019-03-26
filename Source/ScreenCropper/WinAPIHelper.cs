@@ -12,8 +12,11 @@ namespace ScreenCropper
     public static class WinAPIHelper
     {
         #region Drawing
+
         public static void DrawWindowRectangle(Rectangle rect, IntPtr windowHandle)
         {
+            // I am using this function because it is much faster than the redrawing of the whole form
+
             IntPtr drawReg = CreateRectRgn(rect.Left,
                         rect.Top,
                         rect.Left + rect.Width,
@@ -33,15 +36,17 @@ namespace ScreenCropper
         [DllImport("gdi32.dll")]
         static extern bool Rectangle(IntPtr hdc, int nLeftRect, int nTopRect, int nRightRect, int nBottomRect);
         #endregion
+
         #endregion
 
         #region Hooks
+
         public static IntPtr SetGlobalKeyboardHook(LowLevelHookProcedure proc)
         {
             using (Process curProcess = Process.GetCurrentProcess())
             using (ProcessModule curModule = curProcess.MainModule)
             {
-                return SetWindowsHookEx(WH.KEYBOARD_LL, proc,
+                return SetWindowsHookEx(WH.KEYBOARD_LOW_LEVEL, proc,
                     GetModuleHandle(curModule.ModuleName), 0);
             }
         }
@@ -51,7 +56,7 @@ namespace ScreenCropper
             using (Process curProcess = Process.GetCurrentProcess())
             using (ProcessModule curModule = curProcess.MainModule)
             {
-                return SetWindowsHookEx(WH.WH_MOUSE_LL, proc,
+                return SetWindowsHookEx(WH.MOUSE_LOW_LEVEL, proc,
                     GetModuleHandle(curModule.ModuleName), 0);
             }
         }
@@ -70,6 +75,7 @@ namespace ScreenCropper
         [DllImport("kernel32.dll", CharSet = CharSet.Auto, SetLastError = true)]
         public static extern IntPtr GetModuleHandle(string lpModuleName);
         #endregion
+
         #endregion
     }
 
@@ -138,21 +144,14 @@ namespace ScreenCropper
         CF_DSPENHMETAFILE = 0x8E,
     }
 
-    public enum WM
-    {
-        KEYDOWN = 0x0100,
-        KEYUP = 0x0101,
-
-        SYSKEYDOWN = 0x0104,
-        SYSKEYUP = 0x0105
-    }
-
-    // Made this a static class instead of enum because I fucking hate explicit conversions
+    // Made this a static class instead of enum because I fucking hate explicit conversions :)
     public static class WH
     {
-        public const int KEYBOARD_LL = 13;
-        public const int WH_MOUSE_LL = 14;
+        public const int KEYBOARD_LOW_LEVEL = 13;
+        public const int MOUSE_LOW_LEVEL = 14;
     }
+
+    #region Low Level Mouse Hook Related
 
     public enum MouseMessages
     {
@@ -180,4 +179,6 @@ namespace ScreenCropper
         public uint time;
         public IntPtr dwExtraInfo;
     }
+
+    #endregion
 }

@@ -55,6 +55,8 @@ namespace ScreenCropper
         private Point selectionStartPoint = new Point();
         private Point lastCursorPosition = new Point();
 
+        private Pen selectionRectangleBorderPen = new Pen(new SolidBrush(Color.Black), 1.5f);
+
         private bool isTakingScreenshot = false;
         private bool overlayVisible = false;
 
@@ -124,21 +126,6 @@ namespace ScreenCropper
             return WinAPIHelper.CallNextHookEx(KeyboardHookID, nCode, wParam, lParam);
         }
         #endregion
-        
-        private void StartTakingScreenshot(Point currentMousePosition)
-        {
-            selectionStartPoint = currentMousePosition;
-            isTakingScreenshot = true;
-        }
-
-        private void StopTakingScreenshot()
-        {
-            this.Opacity = 0.25;
-            isTakingScreenshot = false;
-            Visible = false;
-            overlayVisible = false;
-            BackColor = Color.Black;
-        }
 
         private void ShowScreenshotOverlay()
         {
@@ -153,6 +140,21 @@ namespace ScreenCropper
             overlayVisible = true;
 
             DrawWindowRectangle(SystemInformation.VirtualScreen);
+        }
+
+        private void StartTakingScreenshot(Point currentMousePosition)
+        {
+            selectionStartPoint = currentMousePosition;
+            isTakingScreenshot = true;
+        }
+
+        private void StopTakingScreenshot()
+        {
+            this.Opacity = 0.25;
+            isTakingScreenshot = false;
+            Visible = false;
+            overlayVisible = false;
+            BackColor = Color.Black;
         }
 
         private void DrawWindowRectangle(Rectangle rect)
@@ -207,6 +209,16 @@ namespace ScreenCropper
 
             lastCursorPosition = currentMousePosition;
         }
+
+        #region Form events
+        private void frmMain_Paint(object sender, PaintEventArgs e)
+        {
+            // For some reason the clip rectangle is not the same as the one that I use to draw a specified region of this form
+            // it's one pixel wider and higher, so we have to create a new one
+            e.Graphics.DrawRectangle(selectionRectangleBorderPen, new Rectangle(e.ClipRectangle.Location, new Size(e.ClipRectangle.Width - 1, e.ClipRectangle.Height - 1)));
+        }
+        #endregion
+
         #endregion
 
         #region DLL Imports
@@ -254,11 +266,5 @@ namespace ScreenCropper
 
         #endregion
 
-        Pen rectPen = new Pen(new SolidBrush(Color.Black), 1.5f);
-        private void frmMain_Paint(object sender, PaintEventArgs e)
-        {
-            Console.WriteLine("Paint");
-            e.Graphics.DrawRectangle(rectPen, e.ClipRectangle);
-        }
     }
 }
