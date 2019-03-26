@@ -1,11 +1,10 @@
 ﻿using System;
-using System.Windows.Input;
-using System.Diagnostics;
 using System.Collections.Generic;
+using System.Windows.Input;
 using System.Drawing;
-using System.Linq;
 using System.Windows.Forms;
 using System.Runtime.InteropServices;
+using Microsoft.Win32;
 
 namespace ScreenCropper
 {
@@ -14,6 +13,8 @@ namespace ScreenCropper
         public frmMain()
         {
             InitializeComponent();
+
+            InitializeScreenCropper();
 
             MouseHookProcedure = MouseHookCallback;
             MouseHookID = WinAPIHelper.SetGlobalMouseHook(MouseHookProcedure);
@@ -42,7 +43,7 @@ namespace ScreenCropper
         #region Private Variables
 
         // Current key combination that activated Screen Cropper
-        private List<Key> CurrentCombination = new List<Key>() { Key.LeftCtrl, Key.LeftAlt, Key.V };
+        private List<Keys> CurrentCombination = new List<Keys>() { Keys.LControlKey, Keys.LMenu, Keys.C };
 
         // This pointer is required to perform unhooking cleanup
         private IntPtr KeyboardHookID = IntPtr.Zero;
@@ -209,7 +210,7 @@ namespace ScreenCropper
             bool combinationPressed = true;
             foreach (var key in CurrentCombination)
             {
-                if (!Keyboard.IsKeyDown(key))
+                if (!Keyboard.IsKeyDown(KeyInterop.KeyFromVirtualKey((int)key)))
                 {
                     combinationPressed = false;
                     break;
@@ -230,6 +231,119 @@ namespace ScreenCropper
             trayIcon.BalloonTipText = Utils.GetCombinationString(CurrentCombination);
             trayIcon.Visible = true;
             trayIcon.ShowBalloonTip(3000);
+        }
+
+        #endregion
+
+        #region Application Related
+
+        /// <summary>
+        /// The combination is stored in the registry
+        /// </summary>
+        private void LoadCombinationFromRegistry()
+        {
+            RegistryKey screenCropperKey = OpenScreenCropperRegKey();
+
+            var loadedCombinationValue = screenCropperKey.GetValue("ActivationCombination");
+
+            if (loadedCombinationValue != null)
+            {
+                // Succesful load of combination
+                string loadedCombinationString = loadedCombinationValue as string;
+                loadedCombinationString = Utils.NullTerminate(loadedCombinationString);
+
+                CurrentCombination = Utils.ParseCombination(loadedCombinationString);
+            }
+            else
+            {
+                // It has disappeared (??), let's create it again and default it out
+                screenCropperKey.SetValue("ActivationCombination", Utils.SerializeCombination(CurrentCombination));
+            }
+        }
+
+        private void CheckStartup()
+        {
+            var windowsStartupAppsKey = OpenWindowsStartupAppsKey();
+            var screenCropperStartupValue = windowsStartupAppsKey.GetValue("ScreenCropper");
+
+            if (screenCropperStartupValue == null)
+            {
+                // We're not registered in the windows startup, let's ask the user whether he wants the application to be launched at startup
+
+                DialogResult result = MessageBox.Show("Do you want Screen Cropper to be launch at startup?", "Screen Cropper", MessageBoxButtons.YesNo);
+
+                if (result == DialogResult.Yes)
+                {
+                    windowsStartupAppsKey.SetValue("ScreenCropper", Application.ExecutablePath);
+                    launchOnStartupMenuItem.Checked = true;
+                }
+                else
+                {
+                    windowsStartupAppsKey.SetValue("ScreenCropper", "None");
+                    launchOnStartupMenuItem.Checked = false;
+                }
+            }
+            else
+            {
+                // Initizize from current settings
+                string loadedStartupPath = screenCropperStartupValue as string;
+                loadedStartupPath = Utils.NullTerminate(loadedStartupPath);
+
+                // Make sure the value in that Key is equal to the current .exe ("None means that the user has chosen not to launch the application at startup)
+                if (loadedStartupPath == "None")
+                {
+                    launchOnStartupMenuItem.Checked = false;
+                }
+                else
+                {
+                    if (Application.ExecutablePath != loadedStartupPath)
+                    {
+                        windowsStartupAppsKey.SetValue("ScreenCropper", Application.ExecutablePath);
+                    }
+
+                    launchOnStartupMenuItem.Checked = true;
+                }
+            }
+        }
+
+        /// <summary>
+        /// Checks regestry, initializes combination, startup etc.
+        /// </summary>
+        private void InitializeScreenCropper()
+        {
+            var screenCropperKey = OpenScreenCropperRegKey();
+
+            if (screenCropperKey == null)
+            {
+                // First launch
+                screenCropperKey = Registry.CurrentUser.CreateSubKey(@"Software\ScreenCropper", true);
+
+                screenCropperKey.SetValue("ActivationCombination", Utils.SerializeCombination(CurrentCombination));
+
+                CheckStartup();
+            }
+            else
+            {
+                // Initizize current settings
+
+                LoadCombinationFromRegistry();
+
+                CheckStartup();
+            }
+        }
+
+        private RegistryKey OpenScreenCropperRegKey()
+        {
+            var currentUserRegKey = Registry.CurrentUser;
+
+            return currentUserRegKey.OpenSubKey(@"Software\ScreenCropper", true); ;
+        }
+
+        private RegistryKey OpenWindowsStartupAppsKey()
+        {
+            var currentUserRegKey = Registry.CurrentUser;
+
+            return currentUserRegKey.OpenSubKey(@"SOFTWARE\Microsoft\Windows\CurrentVersion\Run", true);
         }
 
         #endregion
@@ -303,5 +417,19 @@ namespace ScreenCropper
         }
 
         #endregion
+
+        private void launchOnStartupMenuItem_Click(object sender, EventArgs e)
+        {
+            var windowsStartupAppsKey = OpenWindowsStartupAppsKey();
+
+            if (launchOnStartupMenuItem.Checked)
+            {
+                windowsStartupAppsKey.SetValue("ScreenCropper", Application.ExecutablePath);
+            }
+            else
+            {
+                windowsStartupAppsKey.SetValue("ScreenCropper", "None");
+            }
+        }
     }
 }

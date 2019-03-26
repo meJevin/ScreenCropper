@@ -56,6 +56,7 @@
             this.launchOnStartupMenuItem.Name = "launchOnStartupMenuItem";
             this.launchOnStartupMenuItem.Size = new System.Drawing.Size(186, 22);
             this.launchOnStartupMenuItem.Text = "Launch on startup";
+            this.launchOnStartupMenuItem.Click += new System.EventHandler(this.launchOnStartupMenuItem_Click);
             // 
             // changeCombinationMenuItem
             // 
