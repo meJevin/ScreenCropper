@@ -73,7 +73,7 @@ namespace ScreenCropper
         {
             if (nCode < 0)
             {
-                return WinAPIHelper.CallNextHookEx(KeyboardHookID, nCode, wParam, lParam);
+                return WinAPIHelper.CallNextHookEx(MouseHookID, nCode, wParam, lParam);
             }
 
             MouseMessages mouseMessage = (MouseMessages)wParam;
@@ -89,6 +89,7 @@ namespace ScreenCropper
             }
             else if (mouseMessage == MouseMessages.WM_LBUTTONUP)
             {
+                Console.WriteLine(DateTime.Now.ToBinary() + ": Mouse event");
                 if (isTakingScreenshot)
                 {
                     StopTakingScreenshot();
@@ -105,7 +106,7 @@ namespace ScreenCropper
                 }
             }
 
-            return WinAPIHelper.CallNextHookEx(KeyboardHookID, nCode, wParam, lParam);
+            return WinAPIHelper.CallNextHookEx(MouseHookID, nCode, wParam, lParam);
         }
 
         private IntPtr KeyboardHookCallback(int nCode, IntPtr wParam, IntPtr lParam)
@@ -411,13 +412,6 @@ namespace ScreenCropper
             }
         }
 
-        private void showCombinationMenuItem_Click(object sender, EventArgs e)
-        {
-            ShowCurrentCombinationInTrayIcon();
-        }
-
-        #endregion
-
         private void launchOnStartupMenuItem_Click(object sender, EventArgs e)
         {
             var windowsStartupAppsKey = OpenWindowsStartupAppsKey();
@@ -431,5 +425,13 @@ namespace ScreenCropper
                 windowsStartupAppsKey.SetValue("ScreenCropper", "None");
             }
         }
+
+        private void showCombinationMenuItem_Click(object sender, EventArgs e)
+        {
+            ShowCurrentCombinationInTrayIcon();
+        }
+
+        #endregion
+
     }
 }
