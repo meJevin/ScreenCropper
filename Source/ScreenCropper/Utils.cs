@@ -7,6 +7,12 @@ namespace ScreenCropper
 {
     public static class Utils
     {
+        /// <summary>
+        /// Creates a combination string in a human-readable format.
+        /// In Screen Cropper this is used for the notification bubble, that shows the current combination
+        /// </summary>
+        /// <param name="combination">List of keys for the combination</param>
+        /// <returns>String in a human-readable format</returns>
         public static string GetCombinationString(List<Keys> combination)
         {
             string result = "";
@@ -25,6 +31,12 @@ namespace ScreenCropper
             return result;
         }
 
+        /// <summary>
+        /// Creates a serialized string from a combination.
+        /// In Screen Cropper this is used to store in the regestry and later parse
+        /// </summary>
+        /// <param name="combination"></param>
+        /// <returns></returns>
         public static string SerializeCombination(List<Keys> combination)
         {
             string result = "";
@@ -39,6 +51,11 @@ namespace ScreenCropper
             return result;
         }
 
+        /// <summary>
+        /// This function parses a combination string from the regestry and returns a List of keys
+        /// </summary>
+        /// <param name="combinationString">Combination string</param>
+        /// <returns>List of keys from the curent combination</returns>
         public static List<Keys> ParseCombination(string combinationString)
         {
             List<Keys> result = new List<Keys>();
@@ -53,6 +70,11 @@ namespace ScreenCropper
             return result;
         }
 
+        /// <summary>
+        /// Somethimes registry strings can have garbage in them and are not properly null-terminated for C#, this function is required for all strings retrieved from the registry
+        /// </summary>
+        /// <param name="str">String fresh out of the registry</param>
+        /// <returns>Properly null-terminated string suitable for future use with C#</returns>
         public static string NullTerminate(string str)
         {
             if (!str.Contains("\0"))
@@ -63,7 +85,7 @@ namespace ScreenCropper
             return str.Substring(0, str.IndexOf('\0') - 1);
         }
 
-        public static Rectangle RectangleFromTwoPoints(System.Drawing.Point p1, System.Drawing.Point p2)
+        public static Rectangle RectangleFromTwoPoints(Point p1, Point p2)
         {
             return new Rectangle(Math.Min(p1.X, p2.X),
                Math.Min(p1.Y, p2.Y),

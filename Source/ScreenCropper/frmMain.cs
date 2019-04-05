@@ -45,6 +45,8 @@ namespace ScreenCropper
         // Current key combination that activated Screen Cropper
         private List<Keys> CurrentCombination = new List<Keys>() { Keys.LControlKey, Keys.LMenu, Keys.C };
 
+        private bool isChangingCombination = false;
+
         // This pointer is required to perform unhooking cleanup
         private IntPtr KeyboardHookID = IntPtr.Zero;
         private static LowLevelHookProcedure KeyboardHookProcedure;
@@ -61,14 +63,21 @@ namespace ScreenCropper
         private bool isTakingScreenshot = false;
         private bool overlayVisible = false;
 
-        private IntPtr screenDC;
-        private IntPtr screenCompatibleDC;
+        private IntPtr screenDC = IntPtr.Zero;
+        private IntPtr screenCompatibleDC = IntPtr.Zero;
 
         #endregion
 
         #region Privates Methods
 
         #region Hook callbacks
+
+        /// <summary>
+        /// Mouse hook is responsible for:
+        /// 1. Deciding when to start taking a screenshot
+        /// 2. Determening the area of the screenshot that the user is currently taking
+        /// 3. Deciding when to stop taking a screenshot abd save it to clipboard
+        /// </summary>
         private IntPtr MouseHookCallback(int nCode, IntPtr wParam, IntPtr lParam)
         {
             if (nCode < 0)
@@ -82,6 +91,7 @@ namespace ScreenCropper
 
             if (mouseMessage == MouseMessages.WM_LBUTTONDOWN)
             {
+                // We can start taking a screenshot only if the overlay is visible and user pressed LMB
                 if (!isTakingScreenshot && overlayVisible)
                 {
                     StartTakingScreenshot(new Point(mouseInfo.point.x, mouseInfo.point.y));
@@ -89,7 +99,7 @@ namespace ScreenCropper
             }
             else if (mouseMessage == MouseMessages.WM_LBUTTONUP)
             {
-                Console.WriteLine(DateTime.Now.ToBinary() + ": Mouse event");
+                // Stop taking a screenshot and save it to clipboard, but only if we're actually taking it
                 if (isTakingScreenshot)
                 {
                     StopTakingScreenshot();
@@ -99,6 +109,7 @@ namespace ScreenCropper
             }
             else if (mouseMessage == MouseMessages.WM_MOUSEMOVE)
             {
+                // If we're taking a screenshot and moving a mouse, this means we're changing the desired screenshot area
                 if (isTakingScreenshot)
                 {
                     HandleScreenshotSelectionChange(new Point(mouseInfo.point.x, mouseInfo.point.y));
@@ -109,6 +120,11 @@ namespace ScreenCropper
             return WinAPIHelper.CallNextHookEx(MouseHookID, nCode, wParam, lParam);
         }
 
+        /// <summary>
+        /// Keyboard hook is responsible for:
+        /// 1. Deciding when to show the screenshot overlay
+        /// 2. Prematurely stop taking a screenshot if Escape key was pressed
+        /// </summary>
         private IntPtr KeyboardHookCallback(int nCode, IntPtr wParam, IntPtr lParam)
         {
             if (nCode < 0)
@@ -118,15 +134,21 @@ namespace ScreenCropper
 
             if (Keyboard.IsKeyDown(Key.Escape))
             {
-                StopTakingScreenshot();
+                // If we're taking a screenshot or issued an overlay, let's cancel them
+                if (isTakingScreenshot || overlayVisible)
+                {
+                    StopTakingScreenshot();
+                }
             }
             else if (IsCombinationPressed())
             {
+                // User has finally pressed his combination, let's show the overlay and wait for him to cancel or start taking a screenshot
                 ShowScreenshotOverlay();
             }
 
             return WinAPIHelper.CallNextHookEx(KeyboardHookID, nCode, wParam, lParam);
         }
+
         #endregion
 
         #region Screenshot Related
@@ -185,6 +207,9 @@ namespace ScreenCropper
             lastCursorPosition = currentMousePosition;
         }
 
+        /// <summary>
+        /// Copies currently selected are to clipboard
+        /// </summary>
         private void CopySelectedAreaToClipBoard()
         {
             Rectangle selectionRect = Utils.RectangleFromTwoPoints(selectionStartPoint, lastCursorPosition);
@@ -206,6 +231,20 @@ namespace ScreenCropper
 
         #region Combination Related
 
+        private void StartChangingCombination()
+        {
+            isChangingCombination = true;
+        }
+        
+        private void StopChangingCombination()
+        {
+            isChangingCombination = false;
+        }
+
+        /// <summary>
+        /// Iterates over all the keys in the current combination and checks if it's down on the keyboard
+        /// </summary>
+        /// <returns></returns>
         private bool IsCombinationPressed()
         {
             bool combinationPressed = true;
@@ -239,7 +278,8 @@ namespace ScreenCropper
         #region Application Related
 
         /// <summary>
-        /// The combination is stored in the registry
+        /// The combination is stored in the registry. This function loads it in, or creates a default one [LCTRL + LALT + C] if there is no regestry entry to read.
+        /// It's also backwards-compatible with the version written in Delphi
         /// </summary>
         private void LoadCombinationFromRegistry()
         {
@@ -257,11 +297,15 @@ namespace ScreenCropper
             }
             else
             {
-                // It has disappeared (??), let's create it again and default it out
+                // It has disappeared or has never been there, let's create it again and default it out
                 screenCropperKey.SetValue("ActivationCombination", Utils.SerializeCombination(CurrentCombination));
             }
         }
 
+        /// <summary>
+        /// Startup options of this application are stored in the registry. This functions reads them and sets the context menu checkbox accordingly.
+        /// If the entry is not found, application will ask the user whether he wants it to load on startup or not
+        /// </summary>
         private void CheckStartup()
         {
             var windowsStartupAppsKey = OpenWindowsStartupAppsKey();
@@ -333,13 +377,19 @@ namespace ScreenCropper
             }
         }
 
+        /// <summary>
+        /// Opens and returns a key where Screen Cropper information is stored
+        /// </summary>
         private RegistryKey OpenScreenCropperRegKey()
         {
             var currentUserRegKey = Registry.CurrentUser;
 
-            return currentUserRegKey.OpenSubKey(@"Software\ScreenCropper", true); ;
+            return currentUserRegKey.OpenSubKey(@"Software\ScreenCropper", true);
         }
 
+        /// <summary>
+        /// Opens and returns a key where Windows stores paths to executables that load on startup
+        /// </summary>
         private RegistryKey OpenWindowsStartupAppsKey()
         {
             var currentUserRegKey = Registry.CurrentUser;
