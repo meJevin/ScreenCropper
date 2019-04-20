@@ -22,7 +22,7 @@ namespace ScreenCropper
             KeyboardHookProcedure = KeyboardHookCallback;
             KeyboardHookID = WinAPIHelper.SetGlobalKeyboardHook(KeyboardHookProcedure);
 
-            // Get device contexts for out screen
+            // Get device contexts for our screen
             screenDC = GetDC(IntPtr.Zero);
             screenCompatibleDC = CreateCompatibleDC(screenDC);
 
@@ -44,6 +44,9 @@ namespace ScreenCropper
 
         // Current key combination that activated Screen Cropper
         private List<Keys> CurrentCombination = new List<Keys>() { Keys.LControlKey, Keys.LMenu, Keys.C };
+
+        // This list holds all the pressed buttons, it updates dynamically according to user actions, and, therefore keyboard events in the low level keyboard hook callback function
+        private Dictionary<Keys, bool> KeysDown = new Dictionary<Keys, bool>();
 
         private bool isChangingCombination = false;
 
@@ -132,19 +135,40 @@ namespace ScreenCropper
                 return WinAPIHelper.CallNextHookEx(KeyboardHookID, nCode, wParam, lParam);
             }
 
-            if (Keyboard.IsKeyDown(Key.Escape))
+            if (isChangingCombination)
             {
-                // If we're taking a screenshot or issued an overlay, let's cancel them
-                if (isTakingScreenshot || overlayVisible)
+                // If we're changing the combination, and we pressed enter, we take all the keys that are pressed and put them into the combination
+                if (Keyboard.IsKeyDown(Key.Enter))
                 {
-                    StopTakingScreenshot();
+                    CurrentCombination.Clear();
+
+                    foreach (Key key in Enum.GetValues(typeof(Key)))
+                    {
+                        if (key == Key.Enter)
+                        {
+                            continue;
+                        }
+
+                        try
+                        {
+                            if (Keyboard.IsKeyDown(key))
+                            {
+                                CurrentCombination.Add((Keys)KeyInterop.VirtualKeyFromKey(key));
+                            }
+                        }
+                        catch
+                        {
+                            continue;
+                        }
+                    }
+
+                    StopChangingCombination();
                 }
+
+                return WinAPIHelper.CallNextHookEx(KeyboardHookID, nCode, wParam, lParam); ;
             }
-            else if (IsCombinationPressed())
-            {
-                // User has finally pressed his combination, let's show the overlay and wait for him to cancel or start taking a screenshot
-                ShowScreenshotOverlay();
-            }
+
+            HandleKeyEvent(wParam, lParam);
 
             return WinAPIHelper.CallNextHookEx(KeyboardHookID, nCode, wParam, lParam);
         }
@@ -234,11 +258,24 @@ namespace ScreenCropper
         private void StartChangingCombination()
         {
             isChangingCombination = true;
+
+            trayIcon.BalloonTipTitle = "Changing combination";
+            trayIcon.BalloonTipText = "You are currently changing the combination that activates Screen Cropper. Push on the desired keys and, while holding them down, push Enter";
+            trayIcon.Visible = true;
+            trayIcon.ShowBalloonTip(3000);
         }
         
         private void StopChangingCombination()
         {
+            RegistryKey screenCropperKey = OpenScreenCropperRegKey();
+            screenCropperKey.SetValue("ActivationCombination", Utils.SerializeCombination(CurrentCombination));
+
             isChangingCombination = false;
+
+            trayIcon.BalloonTipTitle = "You new combination";
+            trayIcon.BalloonTipText = Utils.GetCombinationString(CurrentCombination);
+            trayIcon.Visible = true;
+            trayIcon.ShowBalloonTip(3000);
         }
 
         /// <summary>
@@ -247,10 +284,17 @@ namespace ScreenCropper
         /// <returns></returns>
         private bool IsCombinationPressed()
         {
-            bool combinationPressed = true;
-            foreach (var key in CurrentCombination)
+            if (CurrentCombination.Count != KeysDown.Count)
             {
-                if (!Keyboard.IsKeyDown(KeyInterop.KeyFromVirtualKey((int)key)))
+                return false;
+            }
+
+            bool combinationPressed = true;
+
+            // Here we know that their sizes are equal 
+            for (int i = 0; i < CurrentCombination.Count; ++i)
+            {
+                if (!KeysDown.ContainsKey(CurrentCombination[i]))
                 {
                     combinationPressed = false;
                     break;
@@ -397,6 +441,43 @@ namespace ScreenCropper
             return currentUserRegKey.OpenSubKey(@"SOFTWARE\Microsoft\Windows\CurrentVersion\Run", true);
         }
 
+        private void HandleKeyEvent(IntPtr wParam, IntPtr lParam)
+        {
+            int wParamNumerical = (int)wParam;
+
+            KeyboardHookStructure keyboardStruct = (KeyboardHookStructure)Marshal.PtrToStructure(lParam, typeof(KeyboardHookStructure));
+
+            Keys eventKey = (Keys)keyboardStruct.vkCode;
+            if (wParamNumerical == WM.KEYDOWN || wParamNumerical == WM.SYSKEYDOWN)
+            {
+                if (!KeysDown.ContainsKey(eventKey))
+                {
+                    KeysDown.Add(eventKey, true);
+                }
+            }
+            else if (wParamNumerical == WM.KEYUP || wParamNumerical == WM.SYSKEYUP)
+            {
+                if (KeysDown.ContainsKey(eventKey))
+                {
+                    KeysDown.Remove(eventKey);
+                }
+            }
+
+            if (eventKey == Keys.Escape)
+            {
+                // If we're taking a screenshot or issued an overlay, let's cancel them
+                if (isTakingScreenshot || overlayVisible)
+                {
+                    StopTakingScreenshot();
+                }
+            }
+            else if (IsCombinationPressed())
+            {
+                // User has finally pressed his combination, let's show the overlay and wait for him to cancel or start taking a screenshot
+                ShowScreenshotOverlay();
+            }
+        }
+
         #endregion
 
         #region Form events
@@ -448,7 +529,7 @@ namespace ScreenCropper
 
         #region Tray Icon Context Menu Item Click Events
 
-        private void quitMenuItem_Click(object sender, EventArgs e)
+        private void QuitMenuItem_Click(object sender, EventArgs e)
         {
             DialogResult result = MessageBox.Show("Are you sure you want to exit Screen Cropper?", "Qutting Screen Cropper", MessageBoxButtons.YesNo);
 
@@ -462,10 +543,10 @@ namespace ScreenCropper
             }
         }
 
-        private void launchOnStartupMenuItem_Click(object sender, EventArgs e)
+        private void LaunchOnStartupMenuItem_Click(object sender, EventArgs e)
         {
             var windowsStartupAppsKey = OpenWindowsStartupAppsKey();
-
+             
             if (launchOnStartupMenuItem.Checked)
             {
                 windowsStartupAppsKey.SetValue("ScreenCropper", Application.ExecutablePath);
@@ -476,9 +557,14 @@ namespace ScreenCropper
             }
         }
 
-        private void showCombinationMenuItem_Click(object sender, EventArgs e)
+        private void ShowCombinationMenuItem_Click(object sender, EventArgs e)
         {
             ShowCurrentCombinationInTrayIcon();
+        }
+
+        private void ChangeCombinationMenuItem_Click(object sender, EventArgs e)
+        {
+            StartChangingCombination();
         }
 
         #endregion

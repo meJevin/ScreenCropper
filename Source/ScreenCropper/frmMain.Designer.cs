@@ -48,7 +48,7 @@
             this.showCombinationMenuItem,
             this.quitMenuItem});
             this.trayIconContextMenu.Name = "trayIconContextMenu";
-            this.trayIconContextMenu.Size = new System.Drawing.Size(187, 92);
+            this.trayIconContextMenu.Size = new System.Drawing.Size(187, 114);
             // 
             // launchOnStartupMenuItem
             // 
@@ -56,27 +56,28 @@
             this.launchOnStartupMenuItem.Name = "launchOnStartupMenuItem";
             this.launchOnStartupMenuItem.Size = new System.Drawing.Size(186, 22);
             this.launchOnStartupMenuItem.Text = "Launch on startup";
-            this.launchOnStartupMenuItem.Click += new System.EventHandler(this.launchOnStartupMenuItem_Click);
+            this.launchOnStartupMenuItem.Click += new System.EventHandler(this.LaunchOnStartupMenuItem_Click);
             // 
             // changeCombinationMenuItem
             // 
             this.changeCombinationMenuItem.Name = "changeCombinationMenuItem";
             this.changeCombinationMenuItem.Size = new System.Drawing.Size(186, 22);
             this.changeCombinationMenuItem.Text = "Change combination";
+            this.changeCombinationMenuItem.Click += new System.EventHandler(this.ChangeCombinationMenuItem_Click);
             // 
             // showCombinationMenuItem
             // 
             this.showCombinationMenuItem.Name = "showCombinationMenuItem";
             this.showCombinationMenuItem.Size = new System.Drawing.Size(186, 22);
             this.showCombinationMenuItem.Text = "Show combination";
-            this.showCombinationMenuItem.Click += new System.EventHandler(this.showCombinationMenuItem_Click);
+            this.showCombinationMenuItem.Click += new System.EventHandler(this.ShowCombinationMenuItem_Click);
             // 
             // quitMenuItem
             // 
             this.quitMenuItem.Name = "quitMenuItem";
             this.quitMenuItem.Size = new System.Drawing.Size(186, 22);
             this.quitMenuItem.Text = "Quit";
-            this.quitMenuItem.Click += new System.EventHandler(this.quitMenuItem_Click);
+            this.quitMenuItem.Click += new System.EventHandler(this.QuitMenuItem_Click);
             // 
             // trayNotifyIcon
             // 

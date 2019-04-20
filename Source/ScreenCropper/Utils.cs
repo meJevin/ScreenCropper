@@ -82,7 +82,7 @@ namespace ScreenCropper
                 return str;
             }
 
-            return str.Substring(0, str.IndexOf('\0') - 1);
+            return str.Substring(0, str.IndexOf('\0'));
         }
 
         public static Rectangle RectangleFromTwoPoints(Point p1, Point p2)

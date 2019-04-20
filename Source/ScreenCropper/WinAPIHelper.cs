@@ -151,6 +151,15 @@ namespace ScreenCropper
         public const int MOUSE_LOW_LEVEL = 14;
     }
 
+    public static class WM
+    {
+        public const UInt32 KEYDOWN = 0x0100;
+        public const UInt32 KEYUP = 0x0101;
+        public const UInt32 SYSKEYDOWN = 0x0104;
+        public const UInt32 SYSKEYUP = 0x0105;
+    }
+
+
     #region Low Level Mouse Hook Related
 
     public enum MouseMessages
@@ -178,6 +187,29 @@ namespace ScreenCropper
         public uint flags;
         public uint time;
         public IntPtr dwExtraInfo;
+    }
+
+    #endregion
+
+    #region Low Level Keyboard Hook Related
+
+    [StructLayout(LayoutKind.Sequential)]
+    public class KeyboardHookStructure
+    {
+        public int vkCode;
+        public int scanCode;
+        public KeyboardHookStructureFlags flags;
+        public uint time;
+        public UIntPtr dwExtraInfo;
+    }
+
+    [Flags]
+    public enum KeyboardHookStructureFlags : uint
+    {
+        LLKHF_EXTENDED = 0x01,
+        LLKHF_INJECTED = 0x10,
+        LLKHF_ALTDOWN = 0x20,
+        LLKHF_UP = 0x80,
     }
 
     #endregion
