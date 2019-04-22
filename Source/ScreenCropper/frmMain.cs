@@ -135,39 +135,6 @@ namespace ScreenCropper
                 return WinAPIHelper.CallNextHookEx(KeyboardHookID, nCode, wParam, lParam);
             }
 
-            if (isChangingCombination)
-            {
-                // If we're changing the combination, and we pressed enter, we take all the keys that are pressed and put them into the combination
-                if (Keyboard.IsKeyDown(Key.Enter))
-                {
-                    CurrentCombination.Clear();
-
-                    foreach (Key key in Enum.GetValues(typeof(Key)))
-                    {
-                        if (key == Key.Enter)
-                        {
-                            continue;
-                        }
-
-                        try
-                        {
-                            if (Keyboard.IsKeyDown(key))
-                            {
-                                CurrentCombination.Add((Keys)KeyInterop.VirtualKeyFromKey(key));
-                            }
-                        }
-                        catch
-                        {
-                            continue;
-                        }
-                    }
-
-                    StopChangingCombination();
-                }
-
-                return WinAPIHelper.CallNextHookEx(KeyboardHookID, nCode, wParam, lParam); ;
-            }
-
             HandleKeyEvent(wParam, lParam);
 
             return WinAPIHelper.CallNextHookEx(KeyboardHookID, nCode, wParam, lParam);
@@ -262,7 +229,7 @@ namespace ScreenCropper
             trayIcon.BalloonTipTitle = "Changing combination";
             trayIcon.BalloonTipText = "You are currently changing the combination that activates Screen Cropper. Push on the desired keys and, while holding them down, push Enter";
             trayIcon.Visible = true;
-            trayIcon.ShowBalloonTip(3000);
+            trayIcon.ShowBalloonTip(1000);
         }
         
         private void StopChangingCombination()
@@ -275,7 +242,9 @@ namespace ScreenCropper
             trayIcon.BalloonTipTitle = "You new combination";
             trayIcon.BalloonTipText = Utils.GetCombinationString(CurrentCombination);
             trayIcon.Visible = true;
-            trayIcon.ShowBalloonTip(3000);
+            trayIcon.ShowBalloonTip(1000);
+
+            KeysDown.Clear();
         }
 
         /// <summary>
@@ -284,6 +253,8 @@ namespace ScreenCropper
         /// <returns></returns>
         private bool IsCombinationPressed()
         {
+            Console.WriteLine("Checking combination");
+
             if (CurrentCombination.Count != KeysDown.Count)
             {
                 return false;
@@ -314,7 +285,7 @@ namespace ScreenCropper
             trayIcon.BalloonTipTitle = "Your combination";
             trayIcon.BalloonTipText = Utils.GetCombinationString(CurrentCombination);
             trayIcon.Visible = true;
-            trayIcon.ShowBalloonTip(3000);
+            trayIcon.ShowBalloonTip(1000);
         }
 
         #endregion
@@ -441,6 +412,11 @@ namespace ScreenCropper
             return currentUserRegKey.OpenSubKey(@"SOFTWARE\Microsoft\Windows\CurrentVersion\Run", true);
         }
 
+        /// <summary>
+        /// Handles information from a low level keyboard hook callback function
+        /// </summary>
+        /// <param name="wParam"></param>
+        /// <param name="lParam"></param>
         private void HandleKeyEvent(IntPtr wParam, IntPtr lParam)
         {
             int wParamNumerical = (int)wParam;
@@ -450,8 +426,9 @@ namespace ScreenCropper
             Keys eventKey = (Keys)keyboardStruct.vkCode;
             if (wParamNumerical == WM.KEYDOWN || wParamNumerical == WM.SYSKEYDOWN)
             {
-                if (!KeysDown.ContainsKey(eventKey))
+                if (!KeysDown.ContainsKey(eventKey) && eventKey != Keys.Enter && eventKey != Keys.Escape)
                 {
+                    Console.WriteLine("Added key " + eventKey);
                     KeysDown.Add(eventKey, true);
                 }
             }
@@ -459,19 +436,45 @@ namespace ScreenCropper
             {
                 if (KeysDown.ContainsKey(eventKey))
                 {
+                    Console.WriteLine("Removed key " + eventKey);
                     KeysDown.Remove(eventKey);
                 }
             }
 
-            if (eventKey == Keys.Escape)
+            if (isChangingCombination)
+            {
+                // TODO: 
+                // Perform check for the emptiness of the new combination
+
+                // If we're changing the combination, and we pressed enter, we take all the keys that are pressed and put them into the combination
+
+                if (eventKey == Keys.Enter)
+                {
+                    CurrentCombination.Clear();
+
+                    foreach (var keyKVP in KeysDown)
+                    {
+                        CurrentCombination.Add(keyKVP.Key);
+                    }
+
+                    StopChangingCombination();
+                }
+
+                return;
+            }
+
+            if ((isTakingScreenshot || overlayVisible))
             {
                 // If we're taking a screenshot or issued an overlay, let's cancel them
-                if (isTakingScreenshot || overlayVisible)
+                if (eventKey == Keys.Escape)
                 {
                     StopTakingScreenshot();
                 }
+
+                return;
             }
-            else if (IsCombinationPressed())
+
+            if (IsCombinationPressed())
             {
                 // User has finally pressed his combination, let's show the overlay and wait for him to cancel or start taking a screenshot
                 ShowScreenshotOverlay();
