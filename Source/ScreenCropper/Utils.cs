@@ -93,4 +93,14 @@ namespace ScreenCropper
                Math.Abs(p1.Y - p2.Y));
         }
     }
+
+    public static class ScreenCropperExtensions
+    {
+        // Syntactic sugar :)
+        public static bool Contains<T>(this List<T> list, T val)
+        {
+            return (list.IndexOf(val) != -1);
+        }
+    }
+
 }

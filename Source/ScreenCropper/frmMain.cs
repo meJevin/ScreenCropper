@@ -46,7 +46,7 @@ namespace ScreenCropper
         private List<Keys> CurrentCombination = new List<Keys>() { Keys.LControlKey, Keys.LMenu, Keys.C };
 
         // This list holds all the pressed buttons, it updates dynamically according to user actions, and, therefore keyboard events in the low level keyboard hook callback function
-        private Dictionary<Keys, bool> KeysDown = new Dictionary<Keys, bool>();
+        private List<Keys> KeysDown = new List<Keys>();
 
         private bool isChangingCombination = false;
 
@@ -248,7 +248,7 @@ namespace ScreenCropper
         }
 
         /// <summary>
-        /// Iterates over all the keys in the current combination and checks if it's down on the keyboard
+        /// Iterates over all the keys in the current combination and checks if it's down on the keyboard (we have a special list of keys that are down for that)
         /// </summary>
         /// <returns></returns>
         private bool IsCombinationPressed()
@@ -262,11 +262,12 @@ namespace ScreenCropper
 
             bool combinationPressed = true;
 
-            // Here we know that their sizes are equal 
+            // Here we know that their sizes are equal, let's try to find all the keys in the current combination in the list of keys that are down
             for (int i = 0; i < CurrentCombination.Count; ++i)
             {
-                if (!KeysDown.ContainsKey(CurrentCombination[i]))
+                if (!ScreenCropperExtensions.Contains(KeysDown, CurrentCombination[i]))
                 {
+                    // Whoops, could not find one of the keys, combination is not pressed
                     combinationPressed = false;
                     break;
                 }
@@ -424,17 +425,20 @@ namespace ScreenCropper
             KeyboardHookStructure keyboardStruct = (KeyboardHookStructure)Marshal.PtrToStructure(lParam, typeof(KeyboardHookStructure));
 
             Keys eventKey = (Keys)keyboardStruct.vkCode;
+
             if (wParamNumerical == WM.KEYDOWN || wParamNumerical == WM.SYSKEYDOWN)
             {
-                if (!KeysDown.ContainsKey(eventKey) && eventKey != Keys.Enter && eventKey != Keys.Escape)
+                // Add key to KeysDown variable, if it's not there already
+
+                if (!ScreenCropperExtensions.Contains(KeysDown, eventKey) && eventKey != Keys.Enter && eventKey != Keys.Escape)
                 {
                     Console.WriteLine("Added key " + eventKey);
-                    KeysDown.Add(eventKey, true);
+                    KeysDown.Add(eventKey);
                 }
             }
             else if (wParamNumerical == WM.KEYUP || wParamNumerical == WM.SYSKEYUP)
             {
-                if (KeysDown.ContainsKey(eventKey))
+                if (ScreenCropperExtensions.Contains(KeysDown, eventKey))
                 {
                     Console.WriteLine("Removed key " + eventKey);
                     KeysDown.Remove(eventKey);
@@ -452,9 +456,9 @@ namespace ScreenCropper
                 {
                     CurrentCombination.Clear();
 
-                    foreach (var keyKVP in KeysDown)
+                    foreach (var key in KeysDown)
                     {
-                        CurrentCombination.Add(keyKVP.Key);
+                        CurrentCombination.Add(key);
                     }
 
                     StopChangingCombination();
