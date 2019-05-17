@@ -1,16 +1,15 @@
-﻿using System;
+﻿using Microsoft.Win32;
+using System;
 using System.Collections.Generic;
-using System.Windows.Input;
 using System.Drawing;
-using System.Windows.Forms;
 using System.Runtime.InteropServices;
-using Microsoft.Win32;
+using System.Windows.Forms;
 
 namespace ScreenCropper
 {
-    public partial class frmMain : Form
+    public partial class MainForm : Form
     {
-        public frmMain()
+        public MainForm()
         {
             InitializeComponent();
 
@@ -30,7 +29,7 @@ namespace ScreenCropper
             WinAPIHelper.DrawWindowRectangle(SystemInformation.VirtualScreen, this.Handle);
         }
 
-        ~frmMain()
+        ~MainForm()
         {
             // Release the hooks
             WinAPIHelper.UnhookWindowsHookEx(MouseHookID);
@@ -231,7 +230,7 @@ namespace ScreenCropper
             trayIcon.Visible = true;
             trayIcon.ShowBalloonTip(1000);
         }
-        
+
         private void StopChangingCombination()
         {
             RegistryKey screenCropperKey = OpenScreenCropperRegKey();
@@ -553,7 +552,7 @@ namespace ScreenCropper
         private void LaunchOnStartupMenuItem_Click(object sender, EventArgs e)
         {
             var windowsStartupAppsKey = OpenWindowsStartupAppsKey();
-             
+
             if (launchOnStartupMenuItem.Checked)
             {
                 windowsStartupAppsKey.SetValue("ScreenCropper", Application.ExecutablePath);

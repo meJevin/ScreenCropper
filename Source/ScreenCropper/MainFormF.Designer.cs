@@ -1,6 +1,6 @@
 ﻿namespace ScreenCropper
 {
-    partial class frmMain
+    partial class MainForm
     {
         /// <summary>
         /// Required designer variable.
@@ -29,7 +29,7 @@
         private void InitializeComponent()
         {
             this.components = new System.ComponentModel.Container();
-            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(frmMain));
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(MainForm));
             this.trayIconContextMenu = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.launchOnStartupMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.changeCombinationMenuItem = new System.Windows.Forms.ToolStripMenuItem();

@@ -11,7 +11,7 @@ namespace ScreenCropper
 {
     static class Program
     {
-        private static frmMain MainForm = new frmMain();
+        private static MainForm MainForm = new MainForm();
 
         /// <summary>
         /// The main entry point for the application.
