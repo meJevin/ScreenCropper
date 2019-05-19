@@ -1,4 +1,5 @@
 ﻿/*
+
 Screen Cropper Project - A lightweight screenshot taking program
 Copyright (C) 2019 MICHAEL NAIFIELD
 
@@ -19,6 +20,12 @@ namespace ScreenCropper
         [STAThread]
         static void Main()
         {
+            if (Utils.IsAlreadyRunning())
+            {
+                MessageBox.Show("Screen Cropper is already running!");
+                return;
+            }
+
             Application.EnableVisualStyles();
 
             Application.Run();
@@ -28,7 +35,7 @@ namespace ScreenCropper
         
         static void OnUnhandledExpection(object sender, UnhandledExceptionEventArgs args)
         {
-            MessageBox.Show(args.ToString());
+            MessageBox.Show(args.ToString(), "Screen Cropper error!");
         }
     }
 }

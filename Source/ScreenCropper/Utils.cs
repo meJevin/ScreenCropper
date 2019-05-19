@@ -2,6 +2,7 @@
 using System.Drawing;
 using System.Windows.Forms;
 using System.Collections.Generic;
+using System.Diagnostics;
 
 namespace ScreenCropper
 {
@@ -91,6 +92,18 @@ namespace ScreenCropper
                Math.Min(p1.Y, p2.Y),
                Math.Abs(p1.X - p2.X),
                Math.Abs(p1.Y - p2.Y));
+        }
+
+        public static bool IsAlreadyRunning()
+        {
+            if (Process.GetProcessesByName(Process.GetCurrentProcess().ProcessName).Length > 1)
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
         }
     }
 
