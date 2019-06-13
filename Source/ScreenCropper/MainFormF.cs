@@ -474,7 +474,7 @@ namespace ScreenCropper
                 return;
             }
 
-            if (IsCombinationPressed())
+            if (IsCombinationPressed() && eventKey != Keys.Enter)
             {
                 // User has finally pressed his combination, let's show the overlay and wait for him to cancel or start taking a screenshot
                 ShowScreenshotOverlay();
