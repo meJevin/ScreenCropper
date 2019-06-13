@@ -44,8 +44,8 @@ namespace ScreenCropper
         // Current key combination that activated Screen Cropper
         private List<Keys> CurrentCombination = new List<Keys>() { Keys.LControlKey, Keys.LMenu, Keys.C };
 
-        // This list holds all the pressed buttons, it updates dynamically according to user actions, and, therefore keyboard events in the low level keyboard hook callback function
-        private List<Keys> KeysDown = new List<Keys>();
+        // Buffer to accept new combination
+        private List<Keys> NewCombinationBuffer = new List<Keys>();
 
         private bool isChangingCombination = false;
 
@@ -225,6 +225,8 @@ namespace ScreenCropper
         {
             isChangingCombination = true;
 
+            NewCombinationBuffer.Clear();
+
             trayIcon.BalloonTipTitle = "Changing combination";
             trayIcon.BalloonTipText = "You are currently changing the combination that activates Screen Cropper. Push on the desired keys and, while holding them down, push Enter";
             trayIcon.Visible = true;
@@ -233,6 +235,20 @@ namespace ScreenCropper
 
         private void StopChangingCombination()
         {
+            // If new combination is empty, we're not gonna allow the change :(
+
+            if (NewCombinationBuffer.Count == 0)
+            {
+                isChangingCombination = false;
+                return;
+            }
+
+            CurrentCombination.Clear();
+            foreach (Keys key in NewCombinationBuffer)
+            {
+                CurrentCombination.Add(key);
+            }
+
             RegistryKey screenCropperKey = OpenScreenCropperRegKey();
             screenCropperKey.SetValue("ActivationCombination", Utils.SerializeCombination(CurrentCombination));
 
@@ -242,37 +258,24 @@ namespace ScreenCropper
             trayIcon.BalloonTipText = Utils.GetCombinationString(CurrentCombination);
             trayIcon.Visible = true;
             trayIcon.ShowBalloonTip(1000);
-
-            KeysDown.Clear();
         }
 
         /// <summary>
-        /// Iterates over all the keys in the current combination and checks if it's down on the keyboard (we have a special list of keys that are down for that)
+        /// Iterates over all the keys in the current combination and checks if it's down on the keyboard 
         /// </summary>
         /// <returns></returns>
         private bool IsCombinationPressed()
         {
-            Console.WriteLine("Checking combination");
-
-            if (CurrentCombination.Count != KeysDown.Count)
-            {
-                return false;
-            }
-
-            bool combinationPressed = true;
-
             // Here we know that their sizes are equal, let's try to find all the keys in the current combination in the list of keys that are down
             for (int i = 0; i < CurrentCombination.Count; ++i)
             {
-                if (!ScreenCropperExtensions.Contains(KeysDown, CurrentCombination[i]))
+                if (!CurrentCombination[i].IsDown())
                 {
-                    // Whoops, could not find one of the keys, combination is not pressed
-                    combinationPressed = false;
-                    break;
+                    return false;
                 }
             }
 
-            return combinationPressed;
+            return true;
         }
 
         private void ShowCurrentCombinationInTrayIcon()
@@ -376,6 +379,7 @@ namespace ScreenCropper
             if (screenCropperKey == null)
             {
                 // First launch
+
                 screenCropperKey = Registry.CurrentUser.CreateSubKey(@"Software\ScreenCropper", true);
 
                 screenCropperKey.SetValue("ActivationCombination", Utils.SerializeCombination(CurrentCombination));
@@ -425,42 +429,30 @@ namespace ScreenCropper
 
             Keys eventKey = (Keys)keyboardStruct.vkCode;
 
-            if (wParamNumerical == WM.KEYDOWN || wParamNumerical == WM.SYSKEYDOWN)
-            {
-                // Add key to KeysDown variable, if it's not there already
-
-                if (!ScreenCropperExtensions.Contains(KeysDown, eventKey) && eventKey != Keys.Enter && eventKey != Keys.Escape)
-                {
-                    Console.WriteLine("Added key " + eventKey);
-                    KeysDown.Add(eventKey);
-                }
-            }
-            else if (wParamNumerical == WM.KEYUP || wParamNumerical == WM.SYSKEYUP)
-            {
-                if (ScreenCropperExtensions.Contains(KeysDown, eventKey))
-                {
-                    Console.WriteLine("Removed key " + eventKey);
-                    KeysDown.Remove(eventKey);
-                }
-            }
-
             if (isChangingCombination)
             {
-                // TODO: 
-                // Perform check for the emptiness of the new combination
-
                 // If we're changing the combination, and we pressed enter, we take all the keys that are pressed and put them into the combination
 
                 if (eventKey == Keys.Enter)
                 {
-                    CurrentCombination.Clear();
-
-                    foreach (var key in KeysDown)
-                    {
-                        CurrentCombination.Add(key);
-                    }
-
                     StopChangingCombination();
+                }
+
+                // Else we just add/remove the key from the new combination buffer
+
+                if (wParamNumerical == WM.KEYDOWN || wParamNumerical == WM.SYSKEYDOWN)
+                {
+                    if (!NewCombinationBuffer.Contains(eventKey) && eventKey != Keys.Enter && eventKey != Keys.Escape)
+                    {
+                        NewCombinationBuffer.Add(eventKey);
+                    }
+                }
+                else if (wParamNumerical == WM.KEYUP || wParamNumerical == WM.SYSKEYUP)
+                {
+                    if (NewCombinationBuffer.Contains(eventKey))
+                    {
+                        NewCombinationBuffer.Remove(eventKey);
+                    }
                 }
 
                 return;

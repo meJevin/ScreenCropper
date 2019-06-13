@@ -3,6 +3,8 @@ using System.Drawing;
 using System.Windows.Forms;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Runtime.InteropServices;
+using System.Security;
 
 namespace ScreenCropper
 {
@@ -109,11 +111,16 @@ namespace ScreenCropper
 
     public static class ScreenCropperExtensions
     {
-        // Syntactic sugar :)
-        public static bool Contains<T>(this List<T> list, T val)
+        public static bool IsDown(this Keys key)
         {
-            return (list.IndexOf(val) != -1);
+            return Convert.ToBoolean(GetKeyState((int)key) & 0x8000);
         }
+
+        #region DLL Imports
+        [SuppressUnmanagedCodeSecurityAttribute]
+        [DllImport("user32.dll")]
+        static extern short GetKeyState(int nVirtKey);
+        #endregion
     }
 
 }
