@@ -239,6 +239,11 @@ namespace ScreenCropper
 
             if (NewCombinationBuffer.Count == 0)
             {
+                trayIcon.BalloonTipTitle = "Could not change combination, because it was empty!";
+                trayIcon.BalloonTipText = Utils.GetCombinationString(CurrentCombination);
+                trayIcon.Visible = true;
+                trayIcon.ShowBalloonTip(1000);
+
                 isChangingCombination = false;
                 return;
             }
