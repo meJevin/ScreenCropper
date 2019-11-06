@@ -156,7 +156,9 @@ namespace ScreenCropper
             }
             this.Opacity = 0.5;
             Visible = true;
+
             overlayVisible = true;
+            isTakingScreenshot = false;
 
             WinAPIHelper.DrawWindowRectangle(SystemInformation.VirtualScreen, this.Handle);
         }
