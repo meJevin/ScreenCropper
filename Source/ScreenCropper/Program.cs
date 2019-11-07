@@ -5,7 +5,9 @@ Copyright (C) 2019 MICHAEL NAIFIELD
 
 */
 
+using Squirrel;
 using System;
+using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace ScreenCropper
@@ -18,8 +20,10 @@ namespace ScreenCropper
         /// The main entry point for the application.
         /// </summary>
         [STAThread]
-        static void Main()
+        static async Task Main()
         {
+            CheckForUpdates();
+
             if (Utils.IsAlreadyRunning())
             {
                 MessageBox.Show("Screen Cropper is already running!");
@@ -31,6 +35,14 @@ namespace ScreenCropper
             Application.Run();
 
             AppDomain.CurrentDomain.UnhandledException += new UnhandledExceptionEventHandler(OnUnhandledExpection);
+        }
+
+        static async Task CheckForUpdates()
+        {
+            using (var manager = new UpdateManager(@"C:\Users\Michael\Desktop\Dev\Personal\ScreenCropperCSharp\Source"))
+            {
+                await manager.UpdateApp();
+            }
         }
         
         static void OnUnhandledExpection(object sender, UnhandledExceptionEventArgs args)

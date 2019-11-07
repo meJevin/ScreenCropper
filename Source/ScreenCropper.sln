@@ -5,10 +5,6 @@ VisualStudioVersion = 16.0.28803.156
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ScreenCropper", "ScreenCropper\ScreenCropper.csproj", "{C37AEB6D-F298-4364-9D81-BA956DBA5C7B}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Installer", "Installer", "{94F566E0-4C91-4684-8A19-1AFB2F61F60B}"
-EndProject
-Project("{930C7802-8A8C-48F9-8165-68863BCCD9DD}") = "ScreenCropper", "Installer\ScreenCropper\ScreenCropper.wixproj", "{4E9D1512-2614-4D22-84E7-A493B0531F93}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -25,18 +21,9 @@ Global
 		{C37AEB6D-F298-4364-9D81-BA956DBA5C7B}.Release|Any CPU.Build.0 = Release|Any CPU
 		{C37AEB6D-F298-4364-9D81-BA956DBA5C7B}.Release|x86.ActiveCfg = Release|Any CPU
 		{C37AEB6D-F298-4364-9D81-BA956DBA5C7B}.Release|x86.Build.0 = Release|Any CPU
-		{4E9D1512-2614-4D22-84E7-A493B0531F93}.Debug|Any CPU.ActiveCfg = Debug|x86
-		{4E9D1512-2614-4D22-84E7-A493B0531F93}.Debug|x86.ActiveCfg = Debug|x86
-		{4E9D1512-2614-4D22-84E7-A493B0531F93}.Debug|x86.Build.0 = Debug|x86
-		{4E9D1512-2614-4D22-84E7-A493B0531F93}.Release|Any CPU.ActiveCfg = Release|x86
-		{4E9D1512-2614-4D22-84E7-A493B0531F93}.Release|x86.ActiveCfg = Release|x86
-		{4E9D1512-2614-4D22-84E7-A493B0531F93}.Release|x86.Build.0 = Release|x86
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
-	EndGlobalSection
-	GlobalSection(NestedProjects) = preSolution
-		{4E9D1512-2614-4D22-84E7-A493B0531F93} = {94F566E0-4C91-4684-8A19-1AFB2F61F60B}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {754134C3-9B00-4EA6-B281-588CC7B63A32}

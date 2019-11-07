@@ -1,9 +1,13 @@
 ﻿using Microsoft.Win32;
 using System;
+using System.Threading.Tasks;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Runtime.InteropServices;
 using System.Windows.Forms;
+
+
+using Squirrel;
 
 namespace ScreenCropper
 {
