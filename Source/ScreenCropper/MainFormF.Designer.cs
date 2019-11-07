@@ -76,7 +76,7 @@
             // 
             this.quitMenuItem.Name = "quitMenuItem";
             this.quitMenuItem.Size = new System.Drawing.Size(186, 22);
-            this.quitMenuItem.Text = "Quit";
+            this.quitMenuItem.Text = "Exit";
             this.quitMenuItem.Click += new System.EventHandler(this.QuitMenuItem_Click);
             // 
             // trayNotifyIcon
@@ -91,7 +91,7 @@
             this.trayIcon.Text = "Screen Cropper";
             this.trayIcon.Visible = true;
             // 
-            // frmMain
+            // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
@@ -104,7 +104,7 @@
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.None;
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.ImeMode = System.Windows.Forms.ImeMode.On;
-            this.Name = "frmMain";
+            this.Name = "MainForm";
             this.Opacity = 0.25D;
             this.ShowIcon = false;
             this.ShowInTaskbar = false;
