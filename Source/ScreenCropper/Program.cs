@@ -39,13 +39,14 @@ namespace ScreenCropper
 
         static async Task CheckForUpdates()
         {
-            using (var manager = new UpdateManager(@"https://github.com/meJevin/ScreenCropperCSharp"))
+            using (var manager = new UpdateManager(@"https://github.com/meJevin/ScreenCropperCSharp/releases/latest"))
             {
                 var releaseEntry = await manager.UpdateApp();
 
                 if (releaseEntry != null)
                 {
-                    MessageBox.Show("Screen Cropper has been updated!\nRestart the application in order for changes to take place!", "Update", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    MessageBox.Show($"Screen Cropper has been updated to {releaseEntry.Version.ToString()}!" +
+                        $"\nRestart the application in order for changes to take place!", "Update", MessageBoxButtons.OK, MessageBoxIcon.Information);
                 }
             }
         }
