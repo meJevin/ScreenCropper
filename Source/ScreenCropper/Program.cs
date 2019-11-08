@@ -39,9 +39,9 @@ namespace ScreenCropper
 
         static async Task CheckForUpdates()
         {
-            using (var manager = new UpdateManager(@"https://github.com/meJevin/ScreenCropperCSharp/releases/latest"))
+            using (var manager = UpdateManager.GitHubUpdateManager(@"https://github.com/meJevin/ScreenCropperCSharp"))
             {
-                var releaseEntry = await manager.UpdateApp();
+                var releaseEntry = await manager.Result.UpdateApp();
 
                 if (releaseEntry != null)
                 {
