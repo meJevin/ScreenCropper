@@ -16,6 +16,10 @@ namespace ScreenCropper
     {
         private static MainForm MainForm = new MainForm();
 
+        private static Task UpdateTask = new Task(CheckForUpdates);
+
+        private static UpdateManager UpdManager;
+
         /// <summary>
         /// The main entry point for the application.
         /// </summary>
@@ -23,6 +27,7 @@ namespace ScreenCropper
         static async Task Main()
         {
             AppDomain.CurrentDomain.UnhandledException += new UnhandledExceptionEventHandler(OnUnhandledExpection);
+            AppDomain.CurrentDomain.ProcessExit += OnExit;
 
             if (Utils.IsAlreadyRunning())
             {
@@ -30,26 +35,50 @@ namespace ScreenCropper
                 return;
             }
 
-            CheckForUpdates();
+            UpdateTask.Start();
 
             Application.EnableVisualStyles();
 
             Application.Run();
         }
 
-        static async Task CheckForUpdates()
+
+        static async void CheckForUpdates()
         {
-            using var manager = UpdateManager.GitHubUpdateManager(@"https://github.com/meJevin/ScreenCropperCSharp");
-
-            var releaseEntry = await manager.Result.UpdateApp();
-
-            if (releaseEntry != null)
+            try
             {
-                MessageBox.Show($"Screen Cropper has been updated to {releaseEntry.Version.ToString()}!" +
-                    $"\nRestart the application in order for changes to take place!", "Update", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                UpdManager = await UpdateManager.GitHubUpdateManager(@"https://github.com/meJevin/ScreenCropperCSharp");
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Could not initialize update manager!", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+
+                return;
+            }
+
+            try
+            {
+                var releaseEntry = await UpdManager.UpdateApp();
+
+                if (releaseEntry != null)
+                {
+                    MessageBox.Show($"Screen Cropper version {releaseEntry.Version.ToString()} has been downloaded!" +
+                        $"\nUpdates will take effect after restrat!", "Update", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Could not update app!", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+
+                return;
             }
         }
-        
+
+        private static void OnExit(object sender, EventArgs e)
+        {
+            UpdManager?.Dispose();
+        }
+
         static void OnUnhandledExpection(object sender, UnhandledExceptionEventArgs args)
         {
             MessageBox.Show(args.ExceptionObject.ToString(), "Screen Cropper error!");
