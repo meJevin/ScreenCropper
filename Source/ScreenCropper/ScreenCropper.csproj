@@ -144,6 +144,7 @@
       <DependentUpon>Settings.settings</DependentUpon>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
     </Compile>
+    <None Include="ReleaseNugetSpec.nuspec" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
@@ -173,5 +174,25 @@
     <Error Condition="!Exists('..\packages\squirrel.windows.1.9.1\build\squirrel.windows.props')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\squirrel.windows.1.9.1\build\squirrel.windows.props'))" />
     <Error Condition="!Exists('..\packages\squirrel.windows.1.9.1\build\squirrel.windows.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\squirrel.windows.1.9.1\build\squirrel.windows.targets'))" />
   </Target>
+  
+   <ItemGroup>
+    <NuGetCommandLine Include="..\packages\NuGet.CommandLine.*\tools\nuget.exe">
+      <InProject>False</InProject>
+    </NuGetCommandLine>
+    <Squirrel Include="..\packages\Squirrel.Windows.*\tools\squirrel.exe">
+      <InProject>False</InProject>
+    </Squirrel>
+  </ItemGroup>
+  <Target Name="AfterBuild" Condition=" '$(Configuration)' == 'Release'">
+    <!-- Add some nice errors for the next person that comes along -->
+    <Error Condition="!Exists(@(NuGetCommandLine->'%(FullPath)'))" Text="You are trying to use the Nuget.CommandLine package, but it is not installed. Please install NuGet.CommandLine from the Package Manager." />
+    <Error Condition="!Exists(@(Squirrel->'%(FullPath)'))" Text="You are trying to use the Squirrel.Windows package, but it is not installed. Please install Squirrel.Windows from the Package Manager." />
+    <GetAssemblyIdentity AssemblyFiles="$(TargetPath)">
+      <Output TaskParameter="Assemblies" ItemName="assemblyInfo" />
+    </GetAssemblyIdentity>
+    <Exec Command="@(NuGetCommandLine->'%(FullPath)') pack ReleaseNugetSpec.nuspec -Version $([System.Version]::Parse(%(assemblyInfo.Version)).ToString(3)) -Properties Configuration=Release -OutputDirectory $(OutDir) -BasePath $(OutDir)" />
+    <Exec Command="@(Squirrel->'%(FullPath)') --releasify $(OutDir)ScreenCropper.$([System.Version]::Parse(%(assemblyInfo.Version)).ToString(3)).nupkg --releaseDir=../RELEASES" />
+  </Target>
+  
   <Import Project="..\packages\squirrel.windows.1.9.1\build\squirrel.windows.targets" Condition="Exists('..\packages\squirrel.windows.1.9.1\build\squirrel.windows.targets')" />
 </Project>
