@@ -22,7 +22,9 @@ namespace ScreenCropper
         [STAThread]
         static async Task Main()
         {
-            CheckForUpdates();
+            AppDomain.CurrentDomain.UnhandledException += new UnhandledExceptionEventHandler(OnUnhandledExpection);
+
+            Task.Run(() => CheckForUpdates());
 
             if (Utils.IsAlreadyRunning())
             {
@@ -33,21 +35,18 @@ namespace ScreenCropper
             Application.EnableVisualStyles();
 
             Application.Run();
-
-            AppDomain.CurrentDomain.UnhandledException += new UnhandledExceptionEventHandler(OnUnhandledExpection);
         }
 
         static async Task CheckForUpdates()
         {
-            using (var manager = UpdateManager.GitHubUpdateManager(@"https://github.com/meJevin/ScreenCropperCSharp"))
-            {
-                var releaseEntry = await manager.Result.UpdateApp();
+            using var manager = UpdateManager.GitHubUpdateManager(@"https://github.com/meJevin/ScreenCropperCSharp");
 
-                if (releaseEntry != null)
-                {
-                    MessageBox.Show($"Screen Cropper has been updated to {releaseEntry.Version.ToString()}!" +
-                        $"\nRestart the application in order for changes to take place!", "Update", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                }
+            var releaseEntry = await manager.Result.UpdateApp();
+
+            if (releaseEntry != null)
+            {
+                MessageBox.Show($"Screen Cropper has been updated to {releaseEntry.Version.ToString()}!" +
+                    $"\nRestart the application in order for changes to take place!", "Update", MessageBoxButtons.OK, MessageBoxIcon.Information);
             }
         }
         
