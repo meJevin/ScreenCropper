@@ -24,13 +24,13 @@ namespace ScreenCropper
         {
             AppDomain.CurrentDomain.UnhandledException += new UnhandledExceptionEventHandler(OnUnhandledExpection);
 
-            Task.Run(() => CheckForUpdates());
-
             if (Utils.IsAlreadyRunning())
             {
                 MessageBox.Show("Screen Cropper is already running!");
                 return;
             }
+
+            CheckForUpdates();
 
             Application.EnableVisualStyles();
 
@@ -52,7 +52,7 @@ namespace ScreenCropper
         
         static void OnUnhandledExpection(object sender, UnhandledExceptionEventArgs args)
         {
-            MessageBox.Show(args.ToString(), "Screen Cropper error!");
+            MessageBox.Show(args.ExceptionObject.ToString(), "Screen Cropper error!");
         }
     }
 }
