@@ -35,9 +35,9 @@
             this.changeCombinationMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.showCombinationMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.quitMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.aboutToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.trayNotifyIcon = new System.Windows.Forms.NotifyIcon(this.components);
             this.trayIcon = new System.Windows.Forms.NotifyIcon(this.components);
-            this.aboutToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.trayIconContextMenu.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -47,8 +47,8 @@
             this.launchOnStartupMenuItem,
             this.changeCombinationMenuItem,
             this.showCombinationMenuItem,
-            this.quitMenuItem,
-            this.aboutToolStripMenuItem});
+            this.aboutToolStripMenuItem,
+            this.quitMenuItem});
             this.trayIconContextMenu.Name = "trayIconContextMenu";
             this.trayIconContextMenu.Size = new System.Drawing.Size(187, 136);
             // 
@@ -81,6 +81,12 @@
             this.quitMenuItem.Text = "Exit";
             this.quitMenuItem.Click += new System.EventHandler(this.QuitMenuItem_Click);
             // 
+            // aboutToolStripMenuItem
+            // 
+            this.aboutToolStripMenuItem.Name = "aboutToolStripMenuItem";
+            this.aboutToolStripMenuItem.Size = new System.Drawing.Size(186, 22);
+            this.aboutToolStripMenuItem.Text = "About";
+            // 
             // trayNotifyIcon
             // 
             this.trayNotifyIcon.Text = "Screen Cropper";
@@ -92,12 +98,6 @@
             this.trayIcon.Icon = ((System.Drawing.Icon)(resources.GetObject("trayIcon.Icon")));
             this.trayIcon.Text = "Screen Cropper";
             this.trayIcon.Visible = true;
-            // 
-            // aboutToolStripMenuItem
-            // 
-            this.aboutToolStripMenuItem.Name = "aboutToolStripMenuItem";
-            this.aboutToolStripMenuItem.Size = new System.Drawing.Size(186, 22);
-            this.aboutToolStripMenuItem.Text = "About";
             // 
             // MainForm
             // 
