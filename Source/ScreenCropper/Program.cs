@@ -58,12 +58,19 @@ namespace ScreenCropper
 
             try
             {
+                //var releaseEntry = await UpdManager.UpdateApp();
+                //
+                //if (releaseEntry != null)
+                //{
+                //    MessageBox.Show($"Screen Cropper version {releaseEntry.Version.ToString()} has been downloaded!" +
+                //        $"\nUpdates will take effect after restrat!", "Update", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                //}
                 var updateInfo = await UpdManager.CheckForUpdate();
 
                 if (updateInfo.ReleasesToApply.Count > 0)
                 {
                     var releaseEntry = await UpdManager.UpdateApp();
-
+                    
                     if (releaseEntry != null)
                     {
                         MessageBox.Show($"Screen Cropper version {releaseEntry.Version.ToString()} has been downloaded!" +

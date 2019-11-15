@@ -34,8 +34,8 @@
             this.launchOnStartupMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.changeCombinationMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.showCombinationMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.quitMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.aboutToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.quitMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.trayNotifyIcon = new System.Windows.Forms.NotifyIcon(this.components);
             this.trayIcon = new System.Windows.Forms.NotifyIcon(this.components);
             this.trayIconContextMenu.SuspendLayout();
@@ -74,18 +74,19 @@
             this.showCombinationMenuItem.Text = "Show combination";
             this.showCombinationMenuItem.Click += new System.EventHandler(this.ShowCombinationMenuItem_Click);
             // 
+            // aboutToolStripMenuItem
+            // 
+            this.aboutToolStripMenuItem.Name = "aboutToolStripMenuItem";
+            this.aboutToolStripMenuItem.Size = new System.Drawing.Size(186, 22);
+            this.aboutToolStripMenuItem.Text = "About";
+            this.aboutToolStripMenuItem.Click += new System.EventHandler(this.AboutMenuItem_Click);
+            // 
             // quitMenuItem
             // 
             this.quitMenuItem.Name = "quitMenuItem";
             this.quitMenuItem.Size = new System.Drawing.Size(186, 22);
             this.quitMenuItem.Text = "Exit";
             this.quitMenuItem.Click += new System.EventHandler(this.QuitMenuItem_Click);
-            // 
-            // aboutToolStripMenuItem
-            // 
-            this.aboutToolStripMenuItem.Name = "aboutToolStripMenuItem";
-            this.aboutToolStripMenuItem.Size = new System.Drawing.Size(186, 22);
-            this.aboutToolStripMenuItem.Text = "About";
             // 
             // trayNotifyIcon
             // 

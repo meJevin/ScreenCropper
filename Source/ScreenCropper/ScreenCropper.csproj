@@ -111,6 +111,12 @@
     <Reference Include="WindowsBase" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="AboutF.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="AboutF.Designer.cs">
+      <DependentUpon>AboutF.cs</DependentUpon>
+    </Compile>
     <Compile Include="MainFormF.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -121,6 +127,9 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Utils.cs" />
     <Compile Include="WinAPIHelper.cs" />
+    <EmbeddedResource Include="AboutF.resx">
+      <DependentUpon>AboutF.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="MainFormF.resx">
       <DependentUpon>MainFormF.cs</DependentUpon>
     </EmbeddedResource>
@@ -174,8 +183,7 @@
     <Error Condition="!Exists('..\packages\squirrel.windows.1.9.1\build\squirrel.windows.props')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\squirrel.windows.1.9.1\build\squirrel.windows.props'))" />
     <Error Condition="!Exists('..\packages\squirrel.windows.1.9.1\build\squirrel.windows.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\squirrel.windows.1.9.1\build\squirrel.windows.targets'))" />
   </Target>
-  
-   <ItemGroup>
+  <ItemGroup>
     <NuGetCommandLine Include="..\packages\NuGet.CommandLine.*\tools\nuget.exe">
       <InProject>False</InProject>
     </NuGetCommandLine>
@@ -193,6 +201,5 @@
     <Exec Command="@(NuGetCommandLine->'%(FullPath)') pack ReleaseNugetSpec.nuspec -Version $([System.Version]::Parse(%(assemblyInfo.Version)).ToString(3)) -Properties Configuration=Release -OutputDirectory $(OutDir) -BasePath $(OutDir)" />
     <Exec Command="@(Squirrel->'%(FullPath)') --releasify $(OutDir)ScreenCropper.$([System.Version]::Parse(%(assemblyInfo.Version)).ToString(3)).nupkg --releaseDir=../RELEASES" />
   </Target>
-  
   <Import Project="..\packages\squirrel.windows.1.9.1\build\squirrel.windows.targets" Condition="Exists('..\packages\squirrel.windows.1.9.1\build\squirrel.windows.targets')" />
 </Project>

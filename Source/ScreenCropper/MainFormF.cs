@@ -13,6 +13,8 @@ namespace ScreenCropper
 {
     public partial class MainForm : Form
     {
+        public AboutF AboutForm = new AboutF();
+        
         public MainForm()
         {
             InitializeComponent();
@@ -538,6 +540,11 @@ namespace ScreenCropper
 
         #region Tray Icon Context Menu Item Click Events
 
+        private void AboutMenuItem_Click(object sender, EventArgs e)
+        {
+            AboutForm.ShowDialog();
+        }
+
         private void QuitMenuItem_Click(object sender, EventArgs e)
         {
             DialogResult result = MessageBox.Show("Are you sure you want to exit Screen Cropper?", "Qutting Screen Cropper", MessageBoxButtons.YesNo);
@@ -577,6 +584,5 @@ namespace ScreenCropper
         }
 
         #endregion
-
     }
 }
