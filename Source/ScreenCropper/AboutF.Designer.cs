@@ -31,12 +31,15 @@
             this.label1 = new System.Windows.Forms.Label();
             this.CurrentVersionLabel = new System.Windows.Forms.Label();
             this.linkLabel1 = new System.Windows.Forms.LinkLabel();
+            this.UpdateInfoRichTextBox = new System.Windows.Forms.RichTextBox();
+            this.LoadingIndicator = new System.Windows.Forms.PictureBox();
+            ((System.ComponentModel.ISupportInitialize)(this.LoadingIndicator)).BeginInit();
             this.SuspendLayout();
             // 
             // label1
             // 
             this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(12, 18);
+            this.label1.Location = new System.Drawing.Point(9, 18);
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(81, 13);
             this.label1.TabIndex = 0;
@@ -45,7 +48,7 @@
             // CurrentVersionLabel
             // 
             this.CurrentVersionLabel.AutoSize = true;
-            this.CurrentVersionLabel.Location = new System.Drawing.Point(99, 18);
+            this.CurrentVersionLabel.Location = new System.Drawing.Point(96, 18);
             this.CurrentVersionLabel.Name = "CurrentVersionLabel";
             this.CurrentVersionLabel.Size = new System.Drawing.Size(22, 13);
             this.CurrentVersionLabel.TabIndex = 1;
@@ -54,7 +57,7 @@
             // linkLabel1
             // 
             this.linkLabel1.AutoSize = true;
-            this.linkLabel1.Location = new System.Drawing.Point(12, 49);
+            this.linkLabel1.Location = new System.Drawing.Point(9, 49);
             this.linkLabel1.Name = "linkLabel1";
             this.linkLabel1.Size = new System.Drawing.Size(96, 13);
             this.linkLabel1.TabIndex = 2;
@@ -62,17 +65,39 @@
             this.linkLabel1.Text = "Check for Updates";
             this.linkLabel1.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(this.CheckForUpdatesClicked);
             // 
+            // UpdateInfoRichTextBox
+            // 
+            this.UpdateInfoRichTextBox.Location = new System.Drawing.Point(12, 75);
+            this.UpdateInfoRichTextBox.Name = "UpdateInfoRichTextBox";
+            this.UpdateInfoRichTextBox.ReadOnly = true;
+            this.UpdateInfoRichTextBox.Size = new System.Drawing.Size(323, 96);
+            this.UpdateInfoRichTextBox.TabIndex = 3;
+            this.UpdateInfoRichTextBox.Text = "";
+            // 
+            // LoadingIndicator
+            // 
+            this.LoadingIndicator.ImageLocation = "Loading.gif";
+            this.LoadingIndicator.Location = new System.Drawing.Point(300, 34);
+            this.LoadingIndicator.Name = "LoadingIndicator";
+            this.LoadingIndicator.Size = new System.Drawing.Size(35, 35);
+            this.LoadingIndicator.TabIndex = 4;
+            this.LoadingIndicator.TabStop = false;
+            this.LoadingIndicator.Visible = false;
+            // 
             // AboutF
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(347, 183);
+            this.Controls.Add(this.LoadingIndicator);
+            this.Controls.Add(this.UpdateInfoRichTextBox);
             this.Controls.Add(this.linkLabel1);
             this.Controls.Add(this.CurrentVersionLabel);
             this.Controls.Add(this.label1);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog;
             this.Name = "AboutF";
             this.Text = "About";
+            ((System.ComponentModel.ISupportInitialize)(this.LoadingIndicator)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -83,5 +108,7 @@
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.Label CurrentVersionLabel;
         private System.Windows.Forms.LinkLabel linkLabel1;
+        private System.Windows.Forms.RichTextBox UpdateInfoRichTextBox;
+        private System.Windows.Forms.PictureBox LoadingIndicator;
     }
 }

@@ -18,13 +18,13 @@ namespace ScreenCropper
 
         private static Task UpdateTask = new Task(CheckForUpdates);
 
-        private static UpdateManager UpdManager;
+        public static UpdateManager UpdManager;
 
         /// <summary>
         /// The main entry point for the application.
         /// </summary>
         [STAThread]
-        static void Main()
+        static async Task Main()
         {
             AppDomain.CurrentDomain.UnhandledException += new UnhandledExceptionEventHandler(OnUnhandledExpection);
             AppDomain.CurrentDomain.ProcessExit += OnExit;
@@ -35,6 +35,8 @@ namespace ScreenCropper
                 return;
             }
 
+            Task.Run(() => InitUpdateManager()).Wait();
+
             UpdateTask.Start();
 
             Application.EnableVisualStyles();
@@ -42,8 +44,7 @@ namespace ScreenCropper
             Application.Run();
         }
 
-
-        static async void CheckForUpdates()
+        static async Task InitUpdateManager()
         {
             try
             {
@@ -52,19 +53,13 @@ namespace ScreenCropper
             catch (Exception ex)
             {
                 MessageBox.Show("Could not initialize update manager!", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-
-                return;
             }
+        }
 
+        static async void CheckForUpdates()
+        {
             try
             {
-                //var releaseEntry = await UpdManager.UpdateApp();
-                //
-                //if (releaseEntry != null)
-                //{
-                //    MessageBox.Show($"Screen Cropper version {releaseEntry.Version.ToString()} has been downloaded!" +
-                //        $"\nUpdates will take effect after restrat!", "Update", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                //}
                 var updateInfo = await UpdManager.CheckForUpdate();
 
                 if (updateInfo.ReleasesToApply.Count > 0)
@@ -81,8 +76,6 @@ namespace ScreenCropper
             catch (Exception ex)
             {
                 MessageBox.Show("Could not update app!", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-
-                return;
             }
         }
 

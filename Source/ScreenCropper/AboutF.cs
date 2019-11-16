@@ -29,9 +29,34 @@ namespace ScreenCropper
             CurrentVersionLabel.Text = fileVersion.FileVersion;
         }
 
-        private void CheckForUpdatesClicked(object sender, LinkLabelLinkClickedEventArgs e)
+        private async void CheckForUpdatesClicked(object sender, LinkLabelLinkClickedEventArgs e)
         {
+            LoadingIndicator.Visible = true;
 
+            try
+            {
+                var updateInfo = await Program.UpdManager.CheckForUpdate();
+
+                if (updateInfo.ReleasesToApply.Count > 0)
+                {
+                    UpdateInfoRichTextBox.Text = "Updates available! Downloading latest one, version " + updateInfo.ReleasesToApply.Last().Version;
+
+                    await Program.UpdManager.UpdateApp();
+
+                    UpdateInfoRichTextBox.Text = "Version " + updateInfo.ReleasesToApply.Last().Version + " has been downloaded!" +
+                        "Changes will take effect after restart!";
+                }
+                else
+                {
+                    UpdateInfoRichTextBox.Text = "You're up to date!";
+                }
+            }
+            catch (Exception ex)
+            {
+                UpdateInfoRichTextBox.Text = "Could not check for updates!";
+            }
+
+            LoadingIndicator.Visible = false;
         }
     }
 }
