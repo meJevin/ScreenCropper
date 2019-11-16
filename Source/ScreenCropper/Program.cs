@@ -24,7 +24,7 @@ namespace ScreenCropper
         /// The main entry point for the application.
         /// </summary>
         [STAThread]
-        static async Task Main()
+        static void Main()
         {
             AppDomain.CurrentDomain.UnhandledException += new UnhandledExceptionEventHandler(OnUnhandledExpection);
             AppDomain.CurrentDomain.ProcessExit += OnExit;
@@ -44,7 +44,7 @@ namespace ScreenCropper
             Application.Run();
         }
 
-        static async Task InitUpdateManager()
+        public static async Task InitUpdateManager()
         {
             try
             {
