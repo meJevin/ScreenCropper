@@ -13,8 +13,6 @@ namespace ScreenCropper
 {
     public partial class MainForm : Form
     {
-        public AboutF AboutForm = new AboutF();
-        
         public MainForm()
         {
             InitializeComponent();
@@ -539,11 +537,6 @@ namespace ScreenCropper
         #endregion
 
         #region Tray Icon Context Menu Item Click Events
-
-        private void AboutMenuItem_Click(object sender, EventArgs e)
-        {
-            AboutForm.ShowDialog();
-        }
 
         private void QuitMenuItem_Click(object sender, EventArgs e)
         {
