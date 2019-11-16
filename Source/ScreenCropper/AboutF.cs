@@ -58,5 +58,10 @@ namespace ScreenCropper
 
             LoadingIndicator.Visible = false;
         }
+
+        private void WebsiteClicked(object sender, LinkLabelLinkClickedEventArgs e)
+        {
+            Process.Start("https://github.com/meJevin/ScreenCropperCSharp");
+        }
     }
 }

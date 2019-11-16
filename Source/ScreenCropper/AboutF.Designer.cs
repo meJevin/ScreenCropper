@@ -33,6 +33,7 @@
             this.linkLabel1 = new System.Windows.Forms.LinkLabel();
             this.UpdateInfoRichTextBox = new System.Windows.Forms.RichTextBox();
             this.LoadingIndicator = new System.Windows.Forms.PictureBox();
+            this.WebsiteLinkLabel = new System.Windows.Forms.LinkLabel();
             ((System.ComponentModel.ISupportInitialize)(this.LoadingIndicator)).BeginInit();
             this.SuspendLayout();
             // 
@@ -84,11 +85,23 @@
             this.LoadingIndicator.TabStop = false;
             this.LoadingIndicator.Visible = false;
             // 
+            // linkLabel2
+            // 
+            this.WebsiteLinkLabel.AutoSize = true;
+            this.WebsiteLinkLabel.Location = new System.Drawing.Point(289, 18);
+            this.WebsiteLinkLabel.Name = "linkLabel2";
+            this.WebsiteLinkLabel.Size = new System.Drawing.Size(46, 13);
+            this.WebsiteLinkLabel.TabIndex = 5;
+            this.WebsiteLinkLabel.TabStop = true;
+            this.WebsiteLinkLabel.Text = "Website";
+            this.WebsiteLinkLabel.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(this.WebsiteClicked);
+            // 
             // AboutF
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(347, 183);
+            this.Controls.Add(this.WebsiteLinkLabel);
             this.Controls.Add(this.LoadingIndicator);
             this.Controls.Add(this.UpdateInfoRichTextBox);
             this.Controls.Add(this.linkLabel1);
@@ -110,5 +123,6 @@
         private System.Windows.Forms.LinkLabel linkLabel1;
         private System.Windows.Forms.RichTextBox UpdateInfoRichTextBox;
         private System.Windows.Forms.PictureBox LoadingIndicator;
+        private System.Windows.Forms.LinkLabel WebsiteLinkLabel;
     }
 }
