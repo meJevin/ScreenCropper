@@ -37,6 +37,7 @@
             this.quitMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.trayNotifyIcon = new System.Windows.Forms.NotifyIcon(this.components);
             this.trayIcon = new System.Windows.Forms.NotifyIcon(this.components);
+            this.restartToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.trayIconContextMenu.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -46,9 +47,10 @@
             this.launchOnStartupMenuItem,
             this.changeCombinationMenuItem,
             this.showCombinationMenuItem,
+            this.restartToolStripMenuItem,
             this.quitMenuItem});
             this.trayIconContextMenu.Name = "trayIconContextMenu";
-            this.trayIconContextMenu.Size = new System.Drawing.Size(187, 114);
+            this.trayIconContextMenu.Size = new System.Drawing.Size(187, 136);
             // 
             // launchOnStartupMenuItem
             // 
@@ -91,6 +93,13 @@
             this.trayIcon.Text = "Screen Cropper";
             this.trayIcon.Visible = true;
             // 
+            // restartToolStripMenuItem
+            // 
+            this.restartToolStripMenuItem.Name = "restartToolStripMenuItem";
+            this.restartToolStripMenuItem.Size = new System.Drawing.Size(186, 22);
+            this.restartToolStripMenuItem.Text = "Restart";
+            this.restartToolStripMenuItem.Click += new System.EventHandler(this.RestartMenuItem_Click);
+            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -124,5 +133,6 @@
         private System.Windows.Forms.ToolStripMenuItem quitMenuItem;
         private System.Windows.Forms.NotifyIcon trayNotifyIcon;
         private System.Windows.Forms.NotifyIcon trayIcon;
+        private System.Windows.Forms.ToolStripMenuItem restartToolStripMenuItem;
     }
 }

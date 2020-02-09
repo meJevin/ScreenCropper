@@ -575,6 +575,10 @@ namespace ScreenCropper
             StartChangingCombination();
         }
 
+        private void RestartMenuItem_Click(object sender, EventArgs e)
+        {
+            Application.Restart();
+        }
         #endregion
     }
 }
