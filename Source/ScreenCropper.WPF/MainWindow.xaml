@@ -13,7 +13,7 @@
         
         AllowsTransparency="True"
         WindowStyle="None"
-        Background="#3FFFFFFF"
+        Background="#3F000000"
         
         Visibility="Hidden"
         ShowInTaskbar="False"
