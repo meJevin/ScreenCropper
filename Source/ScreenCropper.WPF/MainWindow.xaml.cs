@@ -13,6 +13,9 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 
+using NHotkey;
+using NHotkey.Wpf;
+
 namespace ScreenCropper.WPF
 {
     /// <summary>
@@ -23,6 +26,20 @@ namespace ScreenCropper.WPF
         public MainWindow()
         {
             InitializeComponent();
+
+            HotkeyManager.Current.AddOrReplace("Test", Key.C, ModifierKeys.Control | ModifierKeys.Alt, TestHandler);
+        }
+
+        private void TestHandler(object sender, HotkeyEventArgs e)
+        {
+            if (Visibility == Visibility.Visible)
+            {
+                Visibility = Visibility.Hidden;
+            }
+            else
+            {
+                Visibility = Visibility.Visible;
+            }
         }
     }
 }
