@@ -89,10 +89,17 @@ namespace ScreenCropper.WPF
             }
         }
 
-        private void Window_KeyDown(object sender, System.Windows.Input.KeyEventArgs e)
+        private async void Window_KeyDown(object sender, System.Windows.Input.KeyEventArgs e)
         {
             if (e.Key == Key.Escape)
             {
+                IsTakingScreenshot = false;
+
+                SelectionRectange.Width = 0;
+                SelectionRectange.Height = 0;
+
+                await Task.Delay(50);
+
                 Hide();
             }
         }
