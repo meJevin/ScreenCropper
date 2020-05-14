@@ -60,12 +60,12 @@ namespace ScreenCropper.WPF
             }
         }
 
-        private void Window_MouseMove(object sender, System.Windows.Input.MouseEventArgs e)
+        private void Window_MouseDown(object sender, MouseButtonEventArgs e)
         {
 
         }
 
-        private void Window_MouseDown(object sender, MouseButtonEventArgs e)
+        private void Window_MouseMove(object sender, System.Windows.Input.MouseEventArgs e)
         {
 
         }

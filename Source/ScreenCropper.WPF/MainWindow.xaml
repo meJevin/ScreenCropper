@@ -20,8 +20,8 @@
         
         KeyDown="Window_KeyDown"
         
-        MouseMove="Window_MouseMove"
         MouseDown="Window_MouseDown"
+        MouseMove="Window_MouseMove"
         MouseUp="Window_MouseUp"
         >
     <Grid>
