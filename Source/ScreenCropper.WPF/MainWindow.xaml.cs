@@ -21,6 +21,8 @@ using NHotkey.Wpf;
 using Clipboard = System.Windows.Forms.Clipboard;
 using Point = System.Windows.Point;
 using Color = System.Windows.Media.Color;
+using MessageBox = System.Windows.MessageBox;
+using Application = System.Windows.Application;
 
 namespace ScreenCropper.WPF
 { 
@@ -131,6 +133,21 @@ namespace ScreenCropper.WPF
             await Task.Delay(50);
 
             Hide();
+        }
+
+        private void SettingsMenuItem_Click(object sender, RoutedEventArgs e)
+        {
+
+        }
+
+        private void RestartMenuItem_Click(object sender, RoutedEventArgs e)
+        {
+            System.Windows.Forms.Application.Restart();
+        }
+
+        private void ExitMenuItem_Click(object sender, RoutedEventArgs e)
+        {
+            Application.Current.Shutdown();
         }
     }
 }

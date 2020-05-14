@@ -37,8 +37,18 @@
             
         </Rectangle>
 
-        <tb:TaskbarIcon
+        <tb:TaskbarIcon 
             IconSource="/Images/ScreenCropper.ico"
-            />
+            >
+
+            <tb:TaskbarIcon.ContextMenu>
+                <ContextMenu>
+                    <MenuItem Header="Settings" Click="SettingsMenuItem_Click"/>
+                    <MenuItem Header="Restart" Click="RestartMenuItem_Click"/>
+                    <MenuItem Header="Exit" Click="ExitMenuItem_Click"/>
+                </ContextMenu>
+            </tb:TaskbarIcon.ContextMenu>
+            
+        </tb:TaskbarIcon>
     </Grid>
 </Window>
