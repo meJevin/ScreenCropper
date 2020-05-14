@@ -23,6 +23,9 @@
         MouseDown="Window_MouseDown"
         MouseMove="Window_MouseMove"
         MouseUp="Window_MouseUp"
+        
+         xmlns:tb="http://www.hardcodet.net/taskbar"   
+        
         >
     <Grid>
         <Rectangle x:Name="SelectionRectange"
@@ -33,5 +36,9 @@
                    VerticalAlignment="Top">
             
         </Rectangle>
+
+        <tb:TaskbarIcon
+            IconSource="/Images/ScreenCropper.ico"
+            />
     </Grid>
 </Window>

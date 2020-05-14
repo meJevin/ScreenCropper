@@ -153,9 +153,6 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="Loading.gif">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
     <Content Include="ScreenCropper.ico">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
