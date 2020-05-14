@@ -20,6 +20,7 @@ using NHotkey;
 using NHotkey.Wpf;
 using Clipboard = System.Windows.Forms.Clipboard;
 using Point = System.Windows.Point;
+using Color = System.Windows.Media.Color;
 
 namespace ScreenCropper.WPF
 { 
@@ -46,6 +47,7 @@ namespace ScreenCropper.WPF
 
         private void MainWindow_Activated(object sender, EventArgs e)
         {
+            Background = new SolidColorBrush(Color.FromArgb(35, 0, 0, 0));
             Console.WriteLine("Activated");
         }
 
@@ -101,6 +103,8 @@ namespace ScreenCropper.WPF
 
             StartPoint = Mouse.GetPosition(this);
             CurrentPoint = StartPoint;
+
+            Background = new SolidColorBrush(Color.FromArgb(1, 0, 0, 0));
         }
 
         private void Window_MouseMove(object sender, System.Windows.Input.MouseEventArgs e)
