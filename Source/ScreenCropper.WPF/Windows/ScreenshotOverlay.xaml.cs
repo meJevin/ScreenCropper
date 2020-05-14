@@ -127,20 +127,5 @@ namespace ScreenCropper.WPF
 
             Hide();
         }
-
-        private void SettingsMenuItem_Click(object sender, RoutedEventArgs e)
-        {
-
-        }
-
-        private void RestartMenuItem_Click(object sender, RoutedEventArgs e)
-        {
-            System.Windows.Forms.Application.Restart();
-        }
-
-        private void ExitMenuItem_Click(object sender, RoutedEventArgs e)
-        {
-            Application.Current.Shutdown();
-        }
     }
 }
