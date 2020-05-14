@@ -28,7 +28,7 @@ namespace ScreenCropper.WPF
         {
             InitializeComponent();
 
-            HotkeyManager.Current.AddOrReplace("Test", Key.C, ModifierKeys.Control | ModifierKeys.Alt, TestHandler);
+            HotkeyManager.Current.AddOrReplace("Test", Key.C, ModifierKeys.Control | ModifierKeys.Alt, ShortcutHandler);
 
             Width = SystemInformation.VirtualScreen.Width;
             Height = SystemInformation.VirtualScreen.Height;
@@ -40,7 +40,7 @@ namespace ScreenCropper.WPF
         Point startPoint = new Point(-1, -1);
         Point currPoint = new Point(-1, -1);
 
-        private void TestHandler(object sender, HotkeyEventArgs e)
+        private void ShortcutHandler(object sender, HotkeyEventArgs e)
         {
             if (Visibility == Visibility.Visible)
             {
