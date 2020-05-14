@@ -19,6 +19,10 @@
         ShowInTaskbar="False"
         
         KeyDown="Window_KeyDown"
+        
+        MouseMove="Window_MouseMove"
+        MouseDown="Window_MouseDown"
+        MouseUp="Window_MouseUp"
         >
     <Grid>
         <Rectangle x:Name="SelectionRectange"
