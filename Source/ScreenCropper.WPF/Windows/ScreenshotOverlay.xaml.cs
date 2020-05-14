@@ -16,12 +16,9 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 
-using NHotkey;
-using NHotkey.Wpf;
 using Clipboard = System.Windows.Forms.Clipboard;
 using Point = System.Windows.Point;
 using Color = System.Windows.Media.Color;
-using MessageBox = System.Windows.MessageBox;
 using Application = System.Windows.Application;
 
 namespace ScreenCropper.WPF
@@ -29,26 +26,30 @@ namespace ScreenCropper.WPF
     /// <summary>
     /// Interaction logic for MainWindow.xaml
     /// </summary>
-    public partial class MainWindow : Window
+    public partial class ScreenshotOverlay : Window
     {
-        public MainWindow()
+        public ScreenshotOverlay()
         {
             InitializeComponent();
 
-            HotkeyManager.Current.AddOrReplace("Test", Key.C, ModifierKeys.Control | ModifierKeys.Alt, ShortcutHandler);
-
-            Width = SystemInformation.VirtualScreen.Width;
-            Height = SystemInformation.VirtualScreen.Height;
+            Activated += MainWindow_Activated;
+            Deactivated += MainWindow_Deactivated;
 
             Left = 0;
             Top = 0;
 
-            Activated += MainWindow_Activated;
-            Deactivated += MainWindow_Deactivated;
+            Width = SystemInformation.VirtualScreen.Width;
+            Height = SystemInformation.VirtualScreen.Height;
         }
 
         private void MainWindow_Activated(object sender, EventArgs e)
         {
+            Left = 0;
+            Top = 0;
+
+            Width = SystemInformation.VirtualScreen.Width;
+            Height = SystemInformation.VirtualScreen.Height;
+
             Background = new SolidColorBrush(Color.FromArgb(35, 0, 0, 0));
         }
 
@@ -77,14 +78,6 @@ namespace ScreenCropper.WPF
         Point CurrentPoint = new Point(-1, -1);
 
         bool IsTakingScreenshot = false;
-
-        private void ShortcutHandler(object sender, HotkeyEventArgs e)
-        {
-            if (Visibility == Visibility.Hidden)
-            {
-                Show();
-            }
-        }
 
         private async void Window_KeyDown(object sender, System.Windows.Input.KeyEventArgs e)
         {
