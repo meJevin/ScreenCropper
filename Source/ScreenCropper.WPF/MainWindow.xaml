@@ -17,8 +17,17 @@
         
         Visibility="Hidden"
         ShowInTaskbar="False"
+        
+        KeyDown="Window_KeyDown"
         >
     <Grid>
-
+        <Rectangle x:Name="SelectionRectange"
+                   Stroke="Black" StrokeThickness="1" 
+                   Fill="#3FFFFFFF"
+                   
+                   HorizontalAlignment="Left"
+                   VerticalAlignment="Top">
+            
+        </Rectangle>
     </Grid>
 </Window>
