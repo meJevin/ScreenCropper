@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Drawing;
 using System.Linq;
 using System.Net;
 using System.Text;
@@ -17,6 +18,8 @@ using System.Windows.Shapes;
 
 using NHotkey;
 using NHotkey.Wpf;
+using Clipboard = System.Windows.Forms.Clipboard;
+using Point = System.Windows.Point;
 
 namespace ScreenCropper.WPF
 { 
@@ -36,6 +39,35 @@ namespace ScreenCropper.WPF
 
             Left = 0;
             Top = 0;
+
+            Activated += MainWindow_Activated;
+            Deactivated += MainWindow_Deactivated;
+        }
+
+        private void MainWindow_Activated(object sender, EventArgs e)
+        {
+            Console.WriteLine("Activated");
+        }
+
+        private void MainWindow_Deactivated(object sender, EventArgs e)
+        {
+            // Save selected area
+            Rect temp = new Rect(StartPoint, CurrentPoint);
+            Int32Rect selection = new Int32Rect((int)temp.X, (int)temp.Y, (int)temp.Width, (int)temp.Height);
+            
+            if (selection.Width == 0 || selection.Height == 0)
+            {
+                return;
+            }
+
+            Bitmap b = new Bitmap(selection.Width, selection.Height);
+            Graphics g = Graphics.FromImage(b);
+            g.CopyFromScreen(selection.X, selection.Y, 0, 0, new System.Drawing.Size(selection.Width, selection.Height));
+
+            Clipboard.SetImage(b);
+
+            b.Dispose();
+            g.Dispose();
         }
 
         Point StartPoint = new Point(-1, -1);
@@ -77,17 +109,24 @@ namespace ScreenCropper.WPF
             {
                 CurrentPoint = Mouse.GetPosition(this);
 
-                Rect selectionRect = new Rect(StartPoint, CurrentPoint);
+                Rect selection = new Rect(StartPoint, CurrentPoint);
 
-                SelectionRectange.Margin = new Thickness(selectionRect.X, selectionRect.Y, 0, 0);
-                SelectionRectange.Width = selectionRect.Width;
-                SelectionRectange.Height = selectionRect.Height;
+                SelectionRectange.Margin = new Thickness(selection.X, selection.Y, 0, 0);
+                SelectionRectange.Width = selection.Width;
+                SelectionRectange.Height = selection.Height;
             }
         }
 
-        private void Window_MouseUp(object sender, MouseButtonEventArgs e)
+        private async void Window_MouseUp(object sender, MouseButtonEventArgs e)
         {
             IsTakingScreenshot = false;
+
+            SelectionRectange.Width = 0;
+            SelectionRectange.Height = 0;
+
+            await Task.Delay(50);
+
+            Hide();
         }
     }
 }
