@@ -48,7 +48,6 @@ namespace ScreenCropper.WPF
         private void MainWindow_Activated(object sender, EventArgs e)
         {
             Background = new SolidColorBrush(Color.FromArgb(35, 0, 0, 0));
-            Console.WriteLine("Activated");
         }
 
         private void MainWindow_Deactivated(object sender, EventArgs e)
@@ -79,11 +78,7 @@ namespace ScreenCropper.WPF
 
         private void ShortcutHandler(object sender, HotkeyEventArgs e)
         {
-            if (Visibility == Visibility.Visible)
-            {
-                Hide();
-            }
-            else
+            if (Visibility == Visibility.Hidden)
             {
                 Show();
             }
@@ -93,14 +88,7 @@ namespace ScreenCropper.WPF
         {
             if (e.Key == Key.Escape)
             {
-                IsTakingScreenshot = false;
-
-                SelectionRectange.Width = 0;
-                SelectionRectange.Height = 0;
-
-                await Task.Delay(50);
-
-                Hide();
+                await StopTakingScreenshot();
             }
         }
 
@@ -129,6 +117,11 @@ namespace ScreenCropper.WPF
         }
 
         private async void Window_MouseUp(object sender, MouseButtonEventArgs e)
+        {
+            await StopTakingScreenshot();
+        }
+
+        private async Task StopTakingScreenshot()
         {
             IsTakingScreenshot = false;
 
