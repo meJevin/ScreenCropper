@@ -18,7 +18,7 @@ using NHotkey;
 using NHotkey.Wpf;
 
 namespace ScreenCropper.WPF
-{
+{ 
     /// <summary>
     /// Interaction logic for MainWindow.xaml
     /// </summary>
@@ -37,16 +37,42 @@ namespace ScreenCropper.WPF
             Top = 0;
         }
 
+        Point startPoint = new Point(-1, -1);
+        Point currPoint = new Point(-1, -1);
+
         private void TestHandler(object sender, HotkeyEventArgs e)
         {
             if (Visibility == Visibility.Visible)
             {
-                Visibility = Visibility.Hidden;
+                Hide();
             }
             else
             {
-                Visibility = Visibility.Visible;
+                Show();
             }
+        }
+
+        private void Window_KeyDown(object sender, System.Windows.Input.KeyEventArgs e)
+        {
+            if (e.Key == Key.Escape)
+            {
+                Hide();
+            }
+        }
+
+        private void Window_MouseMove(object sender, System.Windows.Input.MouseEventArgs e)
+        {
+
+        }
+
+        private void Window_MouseDown(object sender, MouseButtonEventArgs e)
+        {
+
+        }
+
+        private void Window_MouseUp(object sender, MouseButtonEventArgs e)
+        {
+
         }
     }
 }
