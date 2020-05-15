@@ -12,17 +12,21 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Controls;
+using ScreenCropper.WPF.Windows;
 
 namespace ScreenCropper.WPF
 {
     public partial class App : Application
     {
         ScreenshotOverlay Overlay;
+        SCSettings Settings;
+
         TaskbarIcon TrayIcon;
 
         protected override void OnStartup(StartupEventArgs e)
         {
             Overlay = new ScreenshotOverlay();
+            Settings = new SCSettings();
 
             HotkeyManager.Current.AddOrReplace("Test", Key.C, ModifierKeys.Control | ModifierKeys.Alt, ShortcutHandler);
 
@@ -59,6 +63,7 @@ namespace ScreenCropper.WPF
 
         private void SettingsMenuItem_Click(object sender, RoutedEventArgs e)
         {
+            Settings.Show();
         }
 
         private void RestartMenuItem_Click(object sender, RoutedEventArgs e)
