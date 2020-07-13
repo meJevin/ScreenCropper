@@ -57,7 +57,7 @@ Upon successful change, you will see the following message:
 
 ## Taking a screenshot
 
-When your current combination is pressed your screen will be covered with an opaque black overlay, which means you're taking a screenshot.
+When your current combination is pressed your screen will be covered with an translucent black overlay, which means you're taking a screenshot.
 
 Select the desired screenshot area by holding down `LMB` and let go.
 
