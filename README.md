@@ -65,4 +65,14 @@ Done! Now the area you selected is in your clipboard!
 
 *Note*: If you want to cancel taking a screenshot hit `Escape`.
 
+## Launching on startup
 
+If you want to change whether Screen Cropper launches on startup or not, right click the tray icon and toggle `Launch on startup` option.
+
+# Issues
+
+Sometimes, when one of the screens is disconnected and reconnected Screen Cropper may behave weird.
+
+For that reason, there's a `Restart` button in the tray menu, which restarts the application.
+
+If possible, submit the issues to this github repo :)
