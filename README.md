@@ -2,6 +2,8 @@
 
 This is a utility program made to facilitate the process of taking screenshots in Windows.
 
+![Demo video](Assets/Gifs/Demo.gif)
+
 ## Features
 
 * Automatic updates
