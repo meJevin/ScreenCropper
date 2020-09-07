@@ -184,7 +184,7 @@
     <NuGetCommandLine Include="..\packages\NuGet.CommandLine.*\tools\nuget.exe">
       <InProject>False</InProject>
     </NuGetCommandLine>
-    <Squirrel Include="..\packages\Squirrel.Windows.*\tools\squirrel.exe">
+    <Squirrel Include="..\packages\squirrel.windows.*\tools\squirrel.exe">
       <InProject>False</InProject>
     </Squirrel>
   </ItemGroup>
