@@ -151,24 +151,24 @@ namespace ScreenCropper
         /// </summary>
         private void ShowScreenshotOverlay()
         {
-            if (this.Size != SystemInformation.VirtualScreen.Size)
-            {
-                this.Location = new System.Drawing.Point(0, 0);
-                this.Size = SystemInformation.VirtualScreen.Size;
-                this.Bounds = new Rectangle(0, 0, this.Size.Width, this.Size.Height);
-            }
+            this.Location = SystemInformation.VirtualScreen.Location;
+            this.Size = SystemInformation.VirtualScreen.Size;
+            this.Bounds = new Rectangle(this.Location.X, this.Location.Y, this.Size.Width, this.Size.Height);
+
             this.Opacity = 0.5;
             Visible = true;
 
             overlayVisible = true;
             isTakingScreenshot = false;
 
-            WinAPIHelper.DrawWindowRectangle(SystemInformation.VirtualScreen, this.Handle);
+            WinAPIHelper.DrawWindowRectangle(new Rectangle(0,0, this.Size.Width, this.Size.Height), this.Handle);
         }
 
         private void StartTakingScreenshot(Point currentMousePosition)
         {
             selectionStartPoint = currentMousePosition;
+            Console.WriteLine($"Started selction from: {selectionStartPoint}");
+
             isTakingScreenshot = true;
         }
 
@@ -195,7 +195,11 @@ namespace ScreenCropper
             }
 
             Rectangle selectionRect = Utils.RectangleFromTwoPoints(selectionStartPoint, currentMousePosition);
+            selectionRect.X -= SystemInformation.VirtualScreen.X;
+            selectionRect.Y -= SystemInformation.VirtualScreen.Y;
 
+            Console.WriteLine($"Current position: {currentMousePosition}");
+            Console.WriteLine($"Selection: {selectionRect}");
             // Look at the defenition for more details
             WinAPIHelper.DrawWindowRectangle(selectionRect, this.Handle);
 

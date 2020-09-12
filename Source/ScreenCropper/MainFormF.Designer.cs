@@ -34,10 +34,10 @@
             this.launchOnStartupMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.changeCombinationMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.showCombinationMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.restartToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.quitMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.trayNotifyIcon = new System.Windows.Forms.NotifyIcon(this.components);
             this.trayIcon = new System.Windows.Forms.NotifyIcon(this.components);
-            this.restartToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.trayIconContextMenu.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -50,7 +50,7 @@
             this.restartToolStripMenuItem,
             this.quitMenuItem});
             this.trayIconContextMenu.Name = "trayIconContextMenu";
-            this.trayIconContextMenu.Size = new System.Drawing.Size(187, 136);
+            this.trayIconContextMenu.Size = new System.Drawing.Size(187, 114);
             // 
             // launchOnStartupMenuItem
             // 
@@ -74,6 +74,13 @@
             this.showCombinationMenuItem.Text = "Show combination";
             this.showCombinationMenuItem.Click += new System.EventHandler(this.ShowCombinationMenuItem_Click);
             // 
+            // restartToolStripMenuItem
+            // 
+            this.restartToolStripMenuItem.Name = "restartToolStripMenuItem";
+            this.restartToolStripMenuItem.Size = new System.Drawing.Size(186, 22);
+            this.restartToolStripMenuItem.Text = "Restart";
+            this.restartToolStripMenuItem.Click += new System.EventHandler(this.RestartMenuItem_Click);
+            // 
             // quitMenuItem
             // 
             this.quitMenuItem.Name = "quitMenuItem";
@@ -92,13 +99,6 @@
             this.trayIcon.Icon = ((System.Drawing.Icon)(resources.GetObject("trayIcon.Icon")));
             this.trayIcon.Text = "Screen Cropper";
             this.trayIcon.Visible = true;
-            // 
-            // restartToolStripMenuItem
-            // 
-            this.restartToolStripMenuItem.Name = "restartToolStripMenuItem";
-            this.restartToolStripMenuItem.Size = new System.Drawing.Size(186, 22);
-            this.restartToolStripMenuItem.Text = "Restart";
-            this.restartToolStripMenuItem.Click += new System.EventHandler(this.RestartMenuItem_Click);
             // 
             // MainForm
             // 
