@@ -17,10 +17,12 @@ namespace ScreenCropper
         {
             // I am using this function because it is much faster than the redrawing of the whole form
 
-            IntPtr drawReg = CreateRectRgn(rect.Left,
-                        rect.Top,
-                        rect.Left + rect.Width,
-                        rect.Top + rect.Height
+            Rectangle movedRect = new Rectangle(new Point(Math.Abs(rect.X), Math.Abs(rect.Y)), rect.Size);
+            Console.WriteLine(movedRect);
+            IntPtr drawReg = CreateRectRgn(movedRect.Left,
+                        movedRect.Top,
+                        movedRect.X + movedRect.Width,
+                        movedRect.Y + movedRect.Height
                         );
             
             SetWindowRgn(windowHandle, drawReg, true);
