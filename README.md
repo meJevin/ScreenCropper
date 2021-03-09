@@ -8,7 +8,7 @@ This is a utility program made to facilitate the process of taking screenshots i
 
 * Automatic updates
 * Custom screenshot combination binding
-* Extremly unobtrusite and easy to use
+* Extremly unobtrusive and easy to use
 * Lightweight
 
 # Installation
